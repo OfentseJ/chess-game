@@ -1,0 +1,59 @@
+body {
+    background-color: #302e2b;
+    color: white;
+    font-family: sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.app-container {
+    text-align: center;
+}
+
+#gameboard {
+    width: 400px;
+    height: 400px;
+    background-color: #eeeed2;
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+    border: 5px solid #5a5a5a;
+}
+
+/* THE SQUARES */
+.square {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 36px;
+    cursor: pointer;
+    user-select: none;
+}
+
+/* Square Colors */
+.beige {
+    background-color: #eeeed2;
+    color: black;
+}
+
+.brown {
+    background-color: #769656;
+    color: black;
+}
+
+.piece {
+    transition: transform 0.2s;
+}
+
+.controls {
+    margin-top: 20px;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
