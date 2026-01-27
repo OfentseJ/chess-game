@@ -1,5 +1,13 @@
 const gameBoard = document.querySelector("#gameboard");
 const flipBtn = document.querySelector("#flip-btn");
+let selectedSquare = null;
+
+const pieceRegistry = {
+  p: new Pawn("black"),
+  P: new Pawn("white"),
+  k: new King("black"),
+  K: new King("white"),
+};
 
 const boardState = [
   ["r", "n", "b", "q", "k", "b", "n", "r"], // Row 0 (Black Major Pieces)
@@ -54,6 +62,42 @@ function createBoard() {
       gameBoard.append(square);
     });
   });
+}
+
+function onSquareClick(row, col) {
+  const clickedPieceChar = boardState[row][col];
+  const clickedSquareDiv = document.querySelector(`[data-row="${row}"]`);
+
+  // --- Selecting a Piece ---
+  if (!selectedSquare) {
+    // you can only select a piece, not an empty square
+    if (clickedPieceChar === "") return;
+
+    // You can only select your own pieces
+    const isWhitePiece = clickedPieceChar === clickedPieceChar.toUpperCase();
+    if (playerTurn === "white" && !isWhitePiece) return;
+    if (playerTurn === "black" && isWhitePiece) return;
+
+    selectedSquare = { row, col };
+
+    if (clickedSquareDiv) clickedSquareDiv.classList.add("selected");
+    return;
+  }
+
+  //--- Moving the piece ---
+  // 1. Get the piece we are moving
+  const startRow = selectedSquare.row;
+  const startCol = selectedSquare.col;
+  const pieceChar = boardState[startRow][startCol];
+  const pieceLogic = pieceRegistry[pieceChar];
+
+  // 2. Validate the move
+  let valid = false;
+  if (pieceLogic) {
+    valid = pieceLogic.isValidMove(startRow, startCol, row, col, boardState);
+  } else {
+    valid = true;
+  }
 }
 
 flipBtn.addEventListener("click", () => {
