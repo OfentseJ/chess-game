@@ -7,6 +7,8 @@ const pieceRegistry = {
   P: new Pawn("white"),
   k: new King("black"),
   K: new King("white"),
+  b: new Bishop("black"),
+  B: new Bishop("white"),
 };
 
 const boardState = [
@@ -111,6 +113,7 @@ function onSquareClick(row, col) {
     boardState[startRow][startCol] = "";
 
     playerTurn = playerTurn === "white" ? "black" : "white";
+    isFlipped = !isFlipped;
   }
 
   selectedSquare = null;
