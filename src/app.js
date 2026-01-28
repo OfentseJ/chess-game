@@ -59,6 +59,10 @@ function createBoard() {
         square.innerHTML = pieceIcons[pieceCode];
         square.classList.add("piece");
       }
+      square.addEventListener("click", () => {
+        onSquareClick(rowIndex, colIndex);
+      });
+
       gameBoard.append(square);
     });
   });
@@ -66,7 +70,9 @@ function createBoard() {
 
 function onSquareClick(row, col) {
   const clickedPieceChar = boardState[row][col];
-  const clickedSquareDiv = document.querySelector(`[data-row="${row}"]`);
+  const clickedSquareDiv = document.querySelector(
+    `[data-row="${row}"][data-col="${col}"]`,
+  );
 
   // --- Selecting a Piece ---
   if (!selectedSquare) {
@@ -98,6 +104,17 @@ function onSquareClick(row, col) {
   } else {
     valid = true;
   }
+
+  // 3. Execute Move
+  if (valid) {
+    boardState[row][col] = pieceChar;
+    boardState[startRow][startCol] = "";
+
+    playerTurn = playerTurn === "white" ? "black" : "white";
+  }
+
+  selectedSquare = null;
+  createBoard();
 }
 
 flipBtn.addEventListener("click", () => {

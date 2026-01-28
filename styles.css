@@ -57,3 +57,7 @@ button {
     font-size: 16px;
     cursor: pointer;
 }
+
+.selected {
+    background-color: yellow !important;
+}
