@@ -82,3 +82,31 @@ class Bishop extends Piece {
     return !this.isTeammate(boardState[r2][c2]);
   }
 }
+
+class Rook extends Piece {
+  isValidMove(r1, c1, r2, c2, boardState) {
+    const rowDiff = Math.abs(r1 - r2);
+    const colDiff = Math.abs(c1 - c2);
+
+    // 1. Must move vertically or horizintally
+    if (colDiff !== 0 && rowDiff !== 0) return false;
+
+    //2. Check for Obstacles
+    const rowStep = r1 === r2 ? 0 : r2 > r1 ? 1 : -1;
+    const colStep = c1 === c2 ? 0 : c2 > c1 ? 1 : -1;
+
+    let currentRow = r1 + rowStep;
+    let currentCol = c1 + colStep;
+
+    while (currentRow !== r2 || currentCol !== c2) {
+      if (boardState[currentRow][currentCol] !== "") {
+        return false;
+      }
+      currentRow += rowStep;
+      currentCol += colStep;
+    }
+
+    // 3. Destination Check
+    return !this.isTeammate(boardState[r2][c2]);
+  }
+}

@@ -45,7 +45,7 @@ body {
 }
 
 .piece {
-    transition: transform 0.2s;
+    transition: transform 1s;
 }
 
 .controls {
