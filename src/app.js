@@ -11,6 +11,10 @@ const pieceRegistry = {
   B: new Bishop("white"),
   r: new Rook("black"),
   R: new Rook("white"),
+  q: new Queen("black"),
+  Q: new Queen("white"),
+  n: new Knight("black"),
+  N: new Knight("white"),
 };
 
 const boardState = [

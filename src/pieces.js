@@ -146,3 +146,22 @@ class Queen extends Piece {
     return !this.isTeammate(boardState[r2][c2]);
   }
 }
+
+class Knight extends Piece {
+  isValidMove(r1, c1, r2, c2, boardState) {
+    const rowDiff = Math.abs(r1 - r2);
+    const colDiff = Math.abs(c1 - c2);
+
+    // 1. MOVEMENT PATTERN (The "L" Shape)
+    // Two squares one way, one square the other way.
+    const isTwoByOne = rowDiff === 2 && colDiff === 1;
+    const isOneByTwo = rowDiff === 1 && colDiff === 2;
+
+    if (!isTwoByOne && !isOneByTwo) {
+      return false;
+    }
+
+    // 2. DESTINATION CHECK
+    return !this.isTeammate(boardState[r2][c2]);
+  }
+}
