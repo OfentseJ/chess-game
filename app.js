@@ -1,5 +1,6 @@
 const gameBoard = document.querySelector("#gameboard");
 const flipBtn = document.querySelector("#flip-btn");
+const resetBtn = document.querySelector("#reset-btn");
 let selectedSquare = null;
 
 const pieceRegistry = {
@@ -17,7 +18,7 @@ const pieceRegistry = {
   N: new Knight("white"),
 };
 
-const boardState = [
+let boardState = [
   ["r", "n", "b", "q", "k", "b", "n", "r"], // Row 0 (Black Major Pieces)
   ["p", "p", "p", "p", "p", "p", "p", "p"], // Row 1 (Black Pawns)
   ["", "", "", "", "", "", "", ""], // Row 2
@@ -45,6 +46,23 @@ const pieceIcons = {
 
 let playerTurn = "white";
 let isFlipped = false;
+
+function resetBoard() {
+  boardState = [
+    ["r", "n", "b", "q", "k", "b", "n", "r"], // Row 0 (Black Major Pieces)
+    ["p", "p", "p", "p", "p", "p", "p", "p"], // Row 1 (Black Pawns)
+    ["", "", "", "", "", "", "", ""], // Row 2
+    ["", "", "", "", "", "", "", ""], // Row 3
+    ["", "", "", "", "", "", "", ""], // Row 4
+    ["", "", "", "", "", "", "", ""], // Row 5
+    ["P", "P", "P", "P", "P", "P", "P", "P"], // Row 6 (White Pawns)
+    ["R", "N", "B", "Q", "K", "B", "N", "R"],
+  ];
+
+  playerTurn = "white";
+  isFlipped = false;
+  selectedSquare = null;
+}
 
 function createBoard() {
   gameBoard.innerHTML = "";
@@ -128,6 +146,11 @@ function onSquareClick(row, col) {
 
 flipBtn.addEventListener("click", () => {
   isFlipped = !isFlipped;
+  createBoard();
+});
+
+resetBtn.addEventListener("click", () => {
+  resetBoard();
   createBoard();
 });
 
