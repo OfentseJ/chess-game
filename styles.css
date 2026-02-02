@@ -68,3 +68,7 @@ button {
 .selected {
     background-color: yellow !important;
 }
+
+.inCheck{
+   background-color: red !important;
+}

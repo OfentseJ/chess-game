@@ -100,30 +100,44 @@ function onSquareClick(row, col) {
     `[data-row="${row}"][data-col="${col}"]`,
   );
 
-  // --- Selecting a Piece ---
+  // --- Handling Selection & Switching ---
   if (!selectedSquare) {
-    // you can only select a piece, not an empty square
     if (clickedPieceChar === "") return;
 
-    // You can only select your own pieces
+    // Ensure we only select our own pieces
     const isWhitePiece = clickedPieceChar === clickedPieceChar.toUpperCase();
     if (playerTurn === "white" && !isWhitePiece) return;
     if (playerTurn === "black" && isWhitePiece) return;
 
     selectedSquare = { row, col };
-
     if (clickedSquareDiv) clickedSquareDiv.classList.add("selected");
     return;
   }
 
-  //--- Moving the piece ---
-  // 1. Get the piece we are moving
+  // ---  Smart Selection Switching ---
+  // If we clicked a piece of OUR OWN color, switch selection to that piece instead of trying to capture it.
+  if (clickedPieceChar !== "") {
+    const isClickedWhite = clickedPieceChar === clickedPieceChar.toUpperCase();
+    const isCurrentWhite = playerTurn === "white";
+
+    // If clicked piece matches current player's color
+    if (isClickedWhite === isCurrentWhite) {
+      createBoard();
+      selectedSquare = { row, col };
+      const newSquareDiv = document.querySelector(
+        `[data-row="${row}"][data-col="${col}"]`,
+      );
+      if (newSquareDiv) newSquareDiv.classList.add("selected");
+      return;
+    }
+  }
+
+  // --- Attempting to Move ---
   const startRow = selectedSquare.row;
   const startCol = selectedSquare.col;
   const pieceChar = boardState[startRow][startCol];
   const pieceLogic = pieceRegistry[pieceChar];
 
-  // 2. Validate the move
   let valid = false;
   if (pieceLogic) {
     valid = pieceLogic.isValidMove(startRow, startCol, row, col, boardState);
@@ -131,24 +145,33 @@ function onSquareClick(row, col) {
       const safe = isMoveSafe(startRow, startCol, row, col);
       if (!safe) {
         valid = false;
-        alert("Illegal move: King would be in check!");
+        alert("Illegal move: King would be in check!"); // Optional feedback
       }
     }
-  } else {
-    valid = true;
   }
 
-  // 3. Execute Move
+  // --- Execute Move ---
   if (valid) {
     boardState[row][col] = pieceChar;
     boardState[startRow][startCol] = "";
 
+    // Toggle Turn
     playerTurn = playerTurn === "white" ? "black" : "white";
     isFlipped = !isFlipped;
-  }
 
-  selectedSquare = null;
-  createBoard();
+    selectedSquare = null;
+    createBoard();
+
+    // --- CHECKMATE DETECTION ---
+    if (isCheckmate(playerTurn)) {
+      setTimeout(() => {
+        alert(`Checkmate! ${playerTurn === "white" ? "Black" : "White"} wins!`);
+      }, 100);
+    }
+  } else {
+    selectedSquare = null;
+    createBoard();
+  }
 }
 
 // Find the coordinates of the King for a specific color;
