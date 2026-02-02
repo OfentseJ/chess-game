@@ -13,6 +13,13 @@ body {
     text-align: center;
 }
 
+.controls-container{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap:8px
+}
+
 #gameboard {
     width: 400px;
     height: 400px;

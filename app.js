@@ -26,7 +26,7 @@ let boardState = [
   ["", "", "", "", "", "", "", ""], // Row 4
   ["", "", "", "", "", "", "", ""], // Row 5
   ["P", "P", "P", "P", "P", "P", "P", "P"], // Row 6 (White Pawns)
-  ["R", "N", "B", "Q", "K", "B", "N", "R"],
+  ["R", "N", "B", "Q", "K", "B", "N", "R"], // Row 7 (White Major Pieces)
 ];
 
 const pieceIcons = {
