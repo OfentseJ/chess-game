@@ -144,6 +144,46 @@ function onSquareClick(row, col) {
   createBoard();
 }
 
+// Find the coordinates of the King for a specific color;
+function findKing(board, color) {
+  const kingChar = color === "white" ? "K" : "k";
+  for (let r = 0; r < 8; r++) {
+    for (let c = 0; c < 8; c++) {
+      if (board[r][c] === kingChar) {
+        return { row: r, col: c };
+      }
+    }
+  }
+  return null;
+}
+
+// Check if a specific square is under attack by the opponenet
+function isSquareUnderAttack(targetRow, targetCol, board, currentPlayerColor) {
+  for (let r = 0; r < 8; r++) {
+    for (let c = 0; c < 8; c++) {
+      const pieceChar = board[r][c];
+
+      // Skip empty squares or my own pieces
+      if (!pieceChar) continue;
+
+      const isWhitePiece = pieceChar === pieceChar.toUpperCase();
+      const pieceColor = isWhitePiece ? "white" : "black";
+
+      if (pieceColor === currentPlayerColor) continue;
+
+      // Check if this opponent piece can hit the target
+      const pieceLogic = pieceRegistry[pieceChar];
+      if (
+        pieceLogic &&
+        pieceLogic.isValidMove(r, c, targetRow, targetCol, board)
+      ) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 flipBtn.addEventListener("click", () => {
   isFlipped = !isFlipped;
   createBoard();
