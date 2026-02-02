@@ -184,6 +184,24 @@ function isSquareUnderAttack(targetRow, targetCol, board, currentPlayerColor) {
   return false;
 }
 
+function isMoveSafe(startRow, startCol, endRow, endCol) {
+  const tempBoard = boardState.map((row) => [...row]);
+  const pieceChar = tempBoard[startRow][startCol];
+
+  const isWhite = pieceChar === pieceChar.toUpperCase();
+  const color = isWhite ? "white" : "black";
+
+  tempBoard[endRow][endCol] = pieceChar;
+  tempBoard[startRow][startCol] = "";
+
+  const kingLoc = findKing(tempBoard, color);
+
+  if (isSquareUnderAttack(kingLoc.row, kingLoc.col, tempBoard, color)) {
+    return false;
+  }
+  return true;
+}
+
 flipBtn.addEventListener("click", () => {
   isFlipped = !isFlipped;
   createBoard();
