@@ -127,6 +127,13 @@ function onSquareClick(row, col) {
   let valid = false;
   if (pieceLogic) {
     valid = pieceLogic.isValidMove(startRow, startCol, row, col, boardState);
+    if (valid) {
+      const safe = isMoveSafe(startRow, startCol, row, col);
+      if (!safe) {
+        valid = false;
+        alert("Illegal move: King would be in check!");
+      }
+    }
   } else {
     valid = true;
   }
@@ -198,6 +205,38 @@ function isMoveSafe(startRow, startCol, endRow, endCol) {
 
   if (isSquareUnderAttack(kingLoc.row, kingLoc.col, tempBoard, color)) {
     return false;
+  }
+  return true;
+}
+
+function isCheckmate(color) {
+  const kingLoc = findKing(boardState, color);
+  if (!isSquareUnderAttack(kingLoc.row, kingLoc.col, boardState, color)) {
+    return false;
+  }
+
+  for (let r = 0; r < 8; r++) {
+    for (let c = 0; c < 8; c++) {
+      const pieceChar = boardState[r][c];
+      if (!pieceChar) continue;
+
+      const isWhite = pieceChar === pieceChar.toUpperCase();
+      if ((color === "white" && !isWhite) || (color === "black" && isWhite))
+        continue;
+
+      for (let tr = 0; tr < 8; tr++) {
+        for (let tc = 0; tc < 8; tc++) {
+          const logic = pieceRegistry[pieceChar];
+
+          if (
+            logic.isValidMove(r, c, tr, tc, boardState) &&
+            isMoveSafe(r, c, tr, tc)
+          ) {
+            return false;
+          }
+        }
+      }
+    }
   }
   return true;
 }
