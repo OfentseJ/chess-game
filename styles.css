@@ -69,6 +69,6 @@ button {
     background-color: yellow !important;
 }
 
-.inCheck{
-   background-color: red !important;
+.check{
+   background-color: #ff4d4d !important;
 }

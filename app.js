@@ -67,6 +67,18 @@ function resetBoard() {
 function createBoard() {
   gameBoard.innerHTML = "";
 
+  const kingLoc = findKing(boardState, playerTurn);
+
+  let isCheck = false;
+  if (kingLoc) {
+    isCheck = isSquareUnderAttack(
+      kingLoc.row,
+      kingLoc.col,
+      boardState,
+      playerTurn,
+    );
+  }
+
   const order = isFlipped ? [7, 6, 5, 4, 3, 2, 1, 0] : [0, 1, 2, 3, 4, 5, 6, 7];
 
   order.forEach((rowIndex) => {
@@ -79,6 +91,10 @@ function createBoard() {
 
       const isBeige = (rowIndex + colIndex) % 2 === 0;
       square.classList.add(isBeige ? "beige" : "brown");
+
+      if (isCheck && kingLoc.row === rowIndex && kingLoc.col == colIndex) {
+        square.classList.add("check");
+      }
 
       const pieceCode = boardState[rowIndex][colIndex];
       if (pieceCode != "") {
@@ -193,7 +209,6 @@ function isSquareUnderAttack(targetRow, targetCol, board, currentPlayerColor) {
     for (let c = 0; c < 8; c++) {
       const pieceChar = board[r][c];
 
-      // Skip empty squares or my own pieces
       if (!pieceChar) continue;
 
       const isWhitePiece = pieceChar === pieceChar.toUpperCase();
@@ -201,9 +216,21 @@ function isSquareUnderAttack(targetRow, targetCol, board, currentPlayerColor) {
 
       if (pieceColor === currentPlayerColor) continue;
 
-      // Check if this opponent piece can hit the target
       const pieceLogic = pieceRegistry[pieceChar];
-      if (
+
+      if (pieceChar.toLowerCase() === "p") {
+        const attackDirection = pieceChar === "p" ? 1 : -1;
+        const attackRow = r + attackDirection;
+        const attackColLeft = c - 1;
+        const attackColRight = c + 1;
+
+        if (
+          targetRow === attackRow &&
+          (targetCol === attackColLeft || targetCol === attackColRight)
+        ) {
+          return true;
+        }
+      } else if (
         pieceLogic &&
         pieceLogic.isValidMove(r, c, targetRow, targetCol, board)
       ) {
@@ -213,7 +240,6 @@ function isSquareUnderAttack(targetRow, targetCol, board, currentPlayerColor) {
   }
   return false;
 }
-
 function isMoveSafe(startRow, startCol, endRow, endCol) {
   const tempBoard = boardState.map((row) => [...row]);
   const pieceChar = tempBoard[startRow][startCol];
