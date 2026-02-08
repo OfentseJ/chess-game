@@ -48,6 +48,7 @@ class King extends Piece {
     const rowDiff = Math.abs(r1 - r2);
     const colDiff = Math.abs(c1 - c2);
 
+    // Standard 1-step move
     if (rowDiff <= 1 && colDiff <= 1) {
       return !this.isTeammate(boardState[r2][c2]);
     }
@@ -55,15 +56,21 @@ class King extends Piece {
     // -- Castling logic --
     // 1. Must be on the correct starting row
     const startRow = this.color === "white" ? 7 : 0;
-    if (r1 !== startRow || r2 !== startRow) return false;
 
-    // 2. Must be a 2-square horizontal move
-    if (rowDiff === 0 && colDiff === 2) {
-      if (c2 > c2) {
-        if (boardState[r1][5] !== "" && boardState[r1][6] !== "") return false;
+    // 2. Must be a 2-square horizontal move on the starting row
+    if (r1 === startRow && r2 === startRow && colDiff === 2 && rowDiff === 0) {
+      // KINGSIDE (Target is to the right)
+      if (c2 > c1) {
+        // Fixed: changed c2 to c1
+        // Check obstruction on col 5 OR 6
+        if (boardState[r1][5] !== "" || boardState[r1][6] !== "") return false; // Fixed: changed && to ||
+
         const pieceAtRook = boardState[r1][7];
         if (pieceAtRook !== (this.color === "white" ? "R" : "r")) return false;
-      } else {
+      }
+      // QUEENSIDE (Target is to the left)
+      else {
+        // Check obstruction on col 1, 2 OR 3
         if (
           boardState[r1][1] !== "" ||
           boardState[r1][2] !== "" ||
