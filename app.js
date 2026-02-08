@@ -172,13 +172,26 @@ function onSquareClick(row, col) {
   const pieceLogic = pieceRegistry[pieceChar];
 
   let valid = false;
+  let isCastlingMove = false;
+
   if (pieceLogic) {
     valid = pieceLogic.isValidMove(startRow, startCol, row, col, boardState);
-    if (valid) {
+    if (
+      valid &&
+      (pieceChar === "K" || pieceChar === "k") &&
+      Math.abs(col - startCol) === 2
+    ) {
+      if (canCastle(startRow, startCol, row, col, playerTurn)) {
+        isCastlingMove = true;
+      } else {
+        valid = false;
+        alert("Cannot Castle: Check, Moved Previously, or Path Blocked");
+      }
+    } else if (valid) {
       const safe = isMoveSafe(startRow, startCol, row, col);
       if (!safe) {
         valid = false;
-        alert("Illegal move: King would be in check!"); // Optional feedback
+        alert("Illegal move: King would be in check!");
       }
     }
   }
@@ -187,6 +200,18 @@ function onSquareClick(row, col) {
   if (valid) {
     boardState[row][col] = pieceChar;
     boardState[startRow][startCol] = "";
+
+    if (isCastlingMove) {
+      const isKingside = col > startCol;
+      const rookStartCol = isKingside ? 7 : 0;
+      const rookEndCol = isKingside ? 5 : 3;
+      const rookChar = boardState[row][rookStartCol];
+
+      boardState[row][rookEndCol] = rookChar;
+      boardState[row][rookStartCol] = "";
+    }
+
+    updateCastlingRights(pieceChar, startRow, startCol);
 
     // Toggle Turn
     playerTurn = playerTurn === "white" ? "black" : "white";
