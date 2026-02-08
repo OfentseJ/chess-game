@@ -51,6 +51,32 @@ class King extends Piece {
     if (rowDiff <= 1 && colDiff <= 1) {
       return !this.isTeammate(boardState[r2][c2]);
     }
+
+    // -- Castling logic --
+    // 1. Must be on the correct starting row
+    const startRow = this.color === "white" ? 7 : 0;
+    if (r1 !== startRow || r2 !== startRow) return false;
+
+    // 2. Must be a 2-square horizontal move
+    if (rowDiff === 0 && colDiff === 2) {
+      if (c2 > c2) {
+        if (boardState[r1][5] !== "" && boardState[r1][6] !== "") return false;
+        const pieceAtRook = boardState[r1][7];
+        if (pieceAtRook !== (this.color === "white" ? "R" : "r")) return false;
+      } else {
+        if (
+          boardState[r1][1] !== "" ||
+          boardState[r1][2] !== "" ||
+          boardState[r1][3] !== ""
+        )
+          return false;
+
+        const pieceAtRook = boardState[r1][0];
+        if (pieceAtRook !== (this.color === "white" ? "R" : "r")) return false;
+      }
+      return true;
+    }
+
     return false;
   }
 }
