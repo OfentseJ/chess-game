@@ -49,17 +49,17 @@ let isFlipped = false;
 
 let castleRights = {
   whiteKingMoved: false,
-  WhiteleftRookMoved: false,
+  whiteLeftRookMoved: false,
   whiteRightRookMoved: false,
   blackKingMoved: false,
-  blackleftRookMoved: false,
+  blackLeftRookMoved: false,
   blackRightRookMoved: false,
 };
 
 function resetBoard() {
   castleRights = {
     whiteKingMoved: false,
-    WhiteleftRookMoved: false,
+    whiteleftRookMoved: false,
     whiteRightRookMoved: false,
     blackKingMoved: false,
     blackleftRookMoved: false,
@@ -344,11 +344,11 @@ function canCastle(startRow, startCol, endRow, endCol, color) {
 
   // 3. Has the specific Rook moved?
   if (color === "white") {
-    if (isKingside && castleRights.whiteRookRightMoved) return false;
-    if (!isKingside && castleRights.whiteRookLeftMoved) return false;
+    if (isKingside && castleRights.whiteRightRookMoved) return false;
+    if (!isKingside && castleRights.whiteLeftRookMoved) return false;
   } else {
-    if (isKingside && castleRights.blackRookRightMoved) return false;
-    if (!isKingside && castleRights.blackRookLeftMoved) return false;
+    if (isKingside && castleRights.blackRightRookMoved) return false;
+    if (!isKingside && castleRights.blackLeftRookMoved) return false;
   }
 
   // 4. Passing through Check? (Square king crosses must be safe)
@@ -359,6 +359,20 @@ function canCastle(startRow, startCol, endRow, endCol, color) {
   if (isSquareUnderAttack(endRow, endCol, boardState, color)) return false;
 
   return true;
+}
+
+function updateCastlingRights(pieceChar, r, c) {
+  if (pieceChar === "K") castleRights.whiteKingMoved = true;
+  if (pieceChar === "k") castleRights.blackKingMoved = true;
+
+  if (pieceChar === "R") {
+    if (r === 7 && c === 0) castleRights.whiteLeftRookMoved = true;
+    if (r === 7 && c === 7) castleRights.whiteRightRookMoved = true;
+  }
+  if (pieceChar === "r") {
+    if (r === 7 && c === 0) castleRights.blackLeftRookMoved = true;
+    if (r === 7 && c === 7) castleRights.blackRightRookMoved = true;
+  }
 }
 
 flipBtn.addEventListener("click", () => {
