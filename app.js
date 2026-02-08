@@ -47,7 +47,24 @@ const pieceIcons = {
 let playerTurn = "white";
 let isFlipped = false;
 
+let castleRights = {
+  whiteKingMoved: false,
+  WhiteleftRookMoved: false,
+  whiteRightRookMoved: false,
+  blackKingMoved: false,
+  blackleftRookMoved: false,
+  blackRightRookMoved: false,
+};
+
 function resetBoard() {
+  castleRights = {
+    whiteKingMoved: false,
+    WhiteleftRookMoved: false,
+    whiteRightRookMoved: false,
+    blackKingMoved: false,
+    blackleftRookMoved: false,
+    blackRightRookMoved: false,
+  };
   boardState = [
     ["r", "n", "b", "q", "k", "b", "n", "r"], // Row 0 (Black Major Pieces)
     ["p", "p", "p", "p", "p", "p", "p", "p"], // Row 1 (Black Pawns)
@@ -287,6 +304,35 @@ function isCheckmate(color) {
       }
     }
   }
+  return true;
+}
+
+function canCastle(startRow, startCol, endRow, endCol, color) {
+  // 1. Has King moved?
+  if (color === "white" && castleRights.whiteKingMoved) return false;
+  if (color === "black" && castleRights.blackKingMoved) return false;
+
+  // 2. Currently in Check?
+  if (isSquareUnderAttack(startRow, startCol, boardState, color)) return false;
+
+  const isKingside = endCol > startCol;
+
+  // 3. Has the specific Rook moved?
+  if (color === "white") {
+    if (isKingside && castleRights.whiteRookRightMoved) return false;
+    if (!isKingside && castleRights.whiteRookLeftMoved) return false;
+  } else {
+    if (isKingside && castleRights.blackRookRightMoved) return false;
+    if (!isKingside && castleRights.blackRookLeftMoved) return false;
+  }
+
+  // 4. Passing through Check? (Square king crosses must be safe)
+  const crossCol = isKingside ? 5 : 3;
+  if (isSquareUnderAttack(startRow, crossCol, boardState, color)) return false;
+
+  // 5. Landing in Check? (Destination must be safe)
+  if (isSquareUnderAttack(endRow, endCol, boardState, color)) return false;
+
   return true;
 }
 
