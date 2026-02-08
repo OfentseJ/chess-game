@@ -62,6 +62,7 @@ class Bishop extends Piece {
 
     //1. Must move diagonally (Slope = 1)
     if (rowDiff !== colDiff) return false;
+    if (rowDiff === 0) return false;
 
     //2. Check for Obstacles
     const rowStep = r2 > r1 ? 1 : -1;
