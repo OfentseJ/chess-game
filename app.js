@@ -56,6 +56,8 @@ let castleRights = {
   blackRightRookMoved: false,
 };
 
+let enPassantTarget = null;
+
 function resetBoard() {
   castleRights = {
     whiteKingMoved: false,
@@ -79,6 +81,7 @@ function resetBoard() {
   playerTurn = "white";
   isFlipped = false;
   selectedSquare = null;
+  enPassantTarget = null;
 }
 
 function createBoard() {
@@ -175,7 +178,14 @@ function onSquareClick(row, col) {
   let isCastlingMove = false;
 
   if (pieceLogic) {
-    valid = pieceLogic.isValidMove(startRow, startCol, row, col, boardState);
+    valid = pieceLogic.isValidMove(
+      startRow,
+      startCol,
+      row,
+      col,
+      boardState,
+      enPassantTarget,
+    );
     if (
       valid &&
       (pieceChar === "K" || pieceChar === "k") &&
@@ -198,6 +208,16 @@ function onSquareClick(row, col) {
 
   // --- Execute Move ---
   if (valid) {
+    if (
+      pieceChar.toLowerCase() === "p" &&
+      col !== startCol &&
+      boardState[row][col] === ""
+    ) {
+      const capturedRow = startRow;
+      const captureCol = startCol;
+      boardState[capturedRow][captureCol] = "";
+    }
+
     boardState[row][col] = pieceChar;
     boardState[startRow][startCol] = "";
 
@@ -212,6 +232,13 @@ function onSquareClick(row, col) {
     }
 
     updateCastlingRights(pieceChar, startRow, startCol);
+
+    if (pieceChar.toLowerCase() === "p" && Math.abs(row - startRow) === 2) {
+      const direction = pieceChar === "P" ? -1 : 1;
+      enPassantTarget = { row: startRow + direction, col: col };
+    } else {
+      enPassantTarget = null;
+    }
 
     // Toggle Turn
     playerTurn = playerTurn === "white" ? "black" : "white";
