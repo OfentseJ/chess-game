@@ -316,6 +316,14 @@ function isMoveSafe(startRow, startCol, endRow, endCol) {
   const isWhite = pieceChar === pieceChar.toUpperCase();
   const color = isWhite ? "white" : "black";
 
+  if (
+    pieceChar.toLowerCase() === "p" &&
+    Math.abs(endCol - startCol) === 1 &&
+    tempBoard[endRow][endCol] === ""
+  ) {
+    tempBoard[startRow][endCol] = "";
+  }
+
   tempBoard[endRow][endCol] = pieceChar;
   tempBoard[startRow][startCol] = "";
 
