@@ -15,7 +15,7 @@ class Piece {
 }
 
 class Pawn extends Piece {
-  isValidMove(r1, c1, r2, c2, boardState) {
+  isValidMove(r1, c1, r2, c2, boardState, enPassantTarget) {
     const direction = this.color === "white" ? -1 : 1;
     const startRow = this.color === "white" ? 6 : 1;
 
@@ -39,6 +39,16 @@ class Pawn extends Piece {
     if (colDiff === 1 && rowDiff === direction) {
       return targetSquare !== "" && !this.isTeammate(targetSquare);
     }
+
+    //Case D: En Pasant Capture
+    if (
+      targetSquare === "" &&
+      enPassantTarget &&
+      r2 === enPassantTarget.row &&
+      c2 === enPassantTarget.col
+    )
+      return true;
+
     return false;
   }
 }
@@ -61,8 +71,6 @@ class King extends Piece {
     if (r1 === startRow && r2 === startRow && colDiff === 2 && rowDiff === 0) {
       // KINGSIDE (Target is to the right)
       if (c2 > c1) {
-        // Fixed: changed c2 to c1
-        // Check obstruction on col 5 OR 6
         if (boardState[r1][5] !== "" || boardState[r1][6] !== "") return false; // Fixed: changed && to ||
 
         const pieceAtRook = boardState[r1][7];
