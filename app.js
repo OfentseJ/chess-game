@@ -19,14 +19,14 @@ const pieceRegistry = {
 };
 
 let boardState = [
-  ["r", "n", "b", "q", "k", "b", "n", "r"], // Row 0 (Black Major Pieces)
-  ["p", "p", "p", "p", "p", "p", "p", "p"], // Row 1 (Black Pawns)
-  ["", "", "", "", "", "", "", ""], // Row 2
-  ["", "", "", "", "", "", "", ""], // Row 3
-  ["", "", "", "", "", "", "", ""], // Row 4
-  ["", "", "", "", "", "", "", ""], // Row 5
-  ["P", "P", "P", "P", "P", "P", "P", "P"], // Row 6 (White Pawns)
-  ["R", "N", "B", "Q", "K", "B", "N", "R"], // Row 7 (White Major Pieces)
+  ["r", "n", "b", "q", "k", "b", "n", "r"],
+  ["p", "p", "p", "p", "p", "p", "p", "p"],
+  ["", "", "", "", "", "", "", ""],
+  ["", "", "", "", "", "", "", ""],
+  ["", "", "", "", "", "", "", ""],
+  ["", "", "", "", "", "", "", ""],
+  ["P", "P", "P", "P", "P", "P", "P", "P"],
+  ["R", "N", "B", "Q", "K", "B", "N", "R"],
 ];
 
 const pieceIcons = {
@@ -59,25 +59,25 @@ let castleRights = {
 let enPassantTarget = null;
 
 function resetBoard() {
+  console.log("--- BOARD RESET ---");
   castleRights = {
     whiteKingMoved: false,
-    whiteleftRookMoved: false,
+    whiteLeftRookMoved: false,
     whiteRightRookMoved: false,
     blackKingMoved: false,
-    blackleftRookMoved: false,
+    blackLeftRookMoved: false,
     blackRightRookMoved: false,
   };
   boardState = [
-    ["r", "n", "b", "q", "k", "b", "n", "r"], // Row 0 (Black Major Pieces)
-    ["p", "p", "p", "p", "p", "p", "p", "p"], // Row 1 (Black Pawns)
-    ["", "", "", "", "", "", "", ""], // Row 2
-    ["", "", "", "", "", "", "", ""], // Row 3
-    ["", "", "", "", "", "", "", ""], // Row 4
-    ["", "", "", "", "", "", "", ""], // Row 5
-    ["P", "P", "P", "P", "P", "P", "P", "P"], // Row 6 (White Pawns)
+    ["r", "n", "b", "q", "k", "b", "n", "r"],
+    ["p", "p", "p", "p", "p", "p", "p", "p"],
+    ["", "", "", "", "", "", "", ""],
+    ["", "", "", "", "", "", "", ""],
+    ["", "", "", "", "", "", "", ""],
+    ["", "", "", "", "", "", "", ""],
+    ["P", "P", "P", "P", "P", "P", "P", "P"],
     ["R", "N", "B", "Q", "K", "B", "N", "R"],
   ];
-
   playerTurn = "white";
   isFlipped = false;
   selectedSquare = null;
@@ -86,9 +86,7 @@ function resetBoard() {
 
 function createBoard() {
   gameBoard.innerHTML = "";
-
   const kingLoc = findKing(boardState, playerTurn);
-
   let isCheck = false;
   if (kingLoc) {
     isCheck = isSquareUnderAttack(
@@ -98,24 +96,18 @@ function createBoard() {
       playerTurn,
     );
   }
-
   const order = isFlipped ? [7, 6, 5, 4, 3, 2, 1, 0] : [0, 1, 2, 3, 4, 5, 6, 7];
-
   order.forEach((rowIndex) => {
     order.forEach((colIndex) => {
       const square = document.createElement("div");
       square.classList.add("square");
-
       square.dataset.row = rowIndex;
       square.dataset.col = colIndex;
-
       const isBeige = (rowIndex + colIndex) % 2 === 0;
       square.classList.add(isBeige ? "beige" : "brown");
-
       if (isCheck && kingLoc.row === rowIndex && kingLoc.col == colIndex) {
         square.classList.add("check");
       }
-
       const pieceCode = boardState[rowIndex][colIndex];
       if (pieceCode != "") {
         square.innerHTML = pieceIcons[pieceCode];
@@ -124,7 +116,6 @@ function createBoard() {
       square.addEventListener("click", () => {
         onSquareClick(rowIndex, colIndex);
       });
-
       gameBoard.append(square);
     });
   });
@@ -136,28 +127,27 @@ function onSquareClick(row, col) {
     `[data-row="${row}"][data-col="${col}"]`,
   );
 
-  // --- Handling Selection & Switching ---
+  // --- Handling Selection ---
   if (!selectedSquare) {
     if (clickedPieceChar === "") return;
-
-    // Ensure we only select our own pieces
     const isWhitePiece = clickedPieceChar === clickedPieceChar.toUpperCase();
     if (playerTurn === "white" && !isWhitePiece) return;
     if (playerTurn === "black" && isWhitePiece) return;
 
+    console.log(`Selected: ${clickedPieceChar} at [${row}, ${col}]`);
     selectedSquare = { row, col };
     if (clickedSquareDiv) clickedSquareDiv.classList.add("selected");
     return;
   }
 
-  // ---  Smart Selection Switching ---
-  // If we clicked a piece of OUR OWN color, switch selection to that piece instead of trying to capture it.
+  // --- Smart Switching ---
   if (clickedPieceChar !== "") {
     const isClickedWhite = clickedPieceChar === clickedPieceChar.toUpperCase();
     const isCurrentWhite = playerTurn === "white";
-
-    // If clicked piece matches current player's color
     if (isClickedWhite === isCurrentWhite) {
+      console.log(
+        `Switched selection to: ${clickedPieceChar} at [${row}, ${col}]`,
+      );
       createBoard();
       selectedSquare = { row, col };
       const newSquareDiv = document.querySelector(
@@ -168,16 +158,22 @@ function onSquareClick(row, col) {
     }
   }
 
-  // --- Attempting to Move ---
+  // --- Attempting Move ---
   const startRow = selectedSquare.row;
   const startCol = selectedSquare.col;
   const pieceChar = boardState[startRow][startCol];
   const pieceLogic = pieceRegistry[pieceChar];
 
+  console.log(
+    `Attempting move: ${pieceChar} from [${startRow},${startCol}] to [${row},${col}]`,
+  );
+  console.log("Current En Passant Target:", enPassantTarget);
+
   let valid = false;
   let isCastlingMove = false;
 
   if (pieceLogic) {
+    // 1. Check Piece Logic
     valid = pieceLogic.isValidMove(
       startRow,
       startCol,
@@ -186,19 +182,30 @@ function onSquareClick(row, col) {
       boardState,
       enPassantTarget,
     );
+    console.log("Piece Logic Valid?", valid);
+
+    // 2. Check Castling Specifics
     if (
       valid &&
       (pieceChar === "K" || pieceChar === "k") &&
       Math.abs(col - startCol) === 2
     ) {
+      console.log("Detected Castling Attempt...");
       if (canCastle(startRow, startCol, row, col, playerTurn)) {
         isCastlingMove = true;
+        console.log("Castling is LEGAL.");
       } else {
         valid = false;
+        console.log(
+          "Castling is ILLEGAL (Rights lost, path blocked, or check).",
+        );
         alert("Cannot Castle: Check, Moved Previously, or Path Blocked");
       }
-    } else if (valid) {
+    }
+    // 3. Check Safety (King in Check?)
+    else if (valid) {
       const safe = isMoveSafe(startRow, startCol, row, col);
+      console.log("Is Move Safe (King not in check)?", safe);
       if (!safe) {
         valid = false;
         alert("Illegal move: King would be in check!");
@@ -208,97 +215,94 @@ function onSquareClick(row, col) {
 
   // --- Execute Move ---
   if (valid) {
+    console.log("Move Validated. Executing...");
+
+    // EN PASSANT CAPTURE EXECUTION
     if (
       pieceChar.toLowerCase() === "p" &&
       col !== startCol &&
       boardState[row][col] === ""
     ) {
+      console.log("Executing En Passant Capture!");
       const capturedRow = startRow;
-      const captureCol = startCol;
+      const captureCol = col;
       boardState[capturedRow][captureCol] = "";
     }
 
+    // STANDARD MOVE
     boardState[row][col] = pieceChar;
     boardState[startRow][startCol] = "";
 
+    // CASTLING EXECUTION
     if (isCastlingMove) {
       const isKingside = col > startCol;
       const rookStartCol = isKingside ? 7 : 0;
       const rookEndCol = isKingside ? 5 : 3;
       const rookChar = boardState[row][rookStartCol];
-
       boardState[row][rookEndCol] = rookChar;
       boardState[row][rookStartCol] = "";
+      console.log(`Rook moved for castling (Kingside: ${isKingside})`);
     }
 
     updateCastlingRights(pieceChar, startRow, startCol);
 
+    // SET EN PASSANT TARGET
     if (pieceChar.toLowerCase() === "p" && Math.abs(row - startRow) === 2) {
       const direction = pieceChar === "P" ? -1 : 1;
       enPassantTarget = { row: startRow + direction, col: col };
+      console.log("En Passant Target SET to:", enPassantTarget);
     } else {
       enPassantTarget = null;
     }
 
-    // Toggle Turn
     playerTurn = playerTurn === "white" ? "black" : "white";
     isFlipped = !isFlipped;
-
     selectedSquare = null;
     createBoard();
 
-    // --- CHECKMATE DETECTION ---
     if (isCheckmate(playerTurn)) {
-      setTimeout(() => {
-        alert(`Checkmate! ${playerTurn === "white" ? "Black" : "White"} wins!`);
-      }, 100);
+      setTimeout(
+        () =>
+          alert(
+            `Checkmate! ${playerTurn === "white" ? "Black" : "White"} wins!`,
+          ),
+        100,
+      );
     }
   } else {
+    console.log("Move Rejected.");
     selectedSquare = null;
     createBoard();
   }
 }
 
-// Find the coordinates of the King for a specific color;
 function findKing(board, color) {
   const kingChar = color === "white" ? "K" : "k";
   for (let r = 0; r < 8; r++) {
     for (let c = 0; c < 8; c++) {
-      if (board[r][c] === kingChar) {
-        return { row: r, col: c };
-      }
+      if (board[r][c] === kingChar) return { row: r, col: c };
     }
   }
   return null;
 }
 
-// Check if a specific square is under attack by the opponenet
 function isSquareUnderAttack(targetRow, targetCol, board, currentPlayerColor) {
   for (let r = 0; r < 8; r++) {
     for (let c = 0; c < 8; c++) {
       const pieceChar = board[r][c];
-
       if (!pieceChar) continue;
-
       const isWhitePiece = pieceChar === pieceChar.toUpperCase();
       const pieceColor = isWhitePiece ? "white" : "black";
-
       if (pieceColor === currentPlayerColor) continue;
 
       const pieceLogic = pieceRegistry[pieceChar];
-
       if (pieceChar.toLowerCase() === "p") {
         const attackDirection = pieceChar === "p" ? 1 : -1;
-        const attackRow = r + attackDirection;
-        const attackColLeft = c - 1;
-        const attackColRight = c + 1;
-
         if (
-          targetRow === attackRow &&
-          (targetCol === attackColLeft || targetCol === attackColRight)
-        ) {
+          targetRow === r + attackDirection &&
+          (targetCol === c - 1 || targetCol === c + 1)
+        )
           return true;
-        }
       } else if (
         pieceLogic &&
         pieceLogic.isValidMove(r, c, targetRow, targetCol, board)
@@ -309,13 +313,14 @@ function isSquareUnderAttack(targetRow, targetCol, board, currentPlayerColor) {
   }
   return false;
 }
+
 function isMoveSafe(startRow, startCol, endRow, endCol) {
   const tempBoard = boardState.map((row) => [...row]);
   const pieceChar = tempBoard[startRow][startCol];
-
   const isWhite = pieceChar === pieceChar.toUpperCase();
   const color = isWhite ? "white" : "black";
 
+  // Simulate En Passant Capture in Safety Check
   if (
     pieceChar.toLowerCase() === "p" &&
     Math.abs(endCol - startCol) === 1 &&
@@ -328,34 +333,29 @@ function isMoveSafe(startRow, startCol, endRow, endCol) {
   tempBoard[startRow][startCol] = "";
 
   const kingLoc = findKing(tempBoard, color);
-
-  if (isSquareUnderAttack(kingLoc.row, kingLoc.col, tempBoard, color)) {
-    return false;
-  }
-  return true;
+  if (!kingLoc) return false; // Should not happen
+  return !isSquareUnderAttack(kingLoc.row, kingLoc.col, tempBoard, color);
 }
 
 function isCheckmate(color) {
   const kingLoc = findKing(boardState, color);
-  if (!isSquareUnderAttack(kingLoc.row, kingLoc.col, boardState, color)) {
+  if (!isSquareUnderAttack(kingLoc.row, kingLoc.col, boardState, color))
     return false;
-  }
 
+  // Brute force check all moves... (simplified for brevity)
   for (let r = 0; r < 8; r++) {
     for (let c = 0; c < 8; c++) {
       const pieceChar = boardState[r][c];
       if (!pieceChar) continue;
-
       const isWhite = pieceChar === pieceChar.toUpperCase();
       if ((color === "white" && !isWhite) || (color === "black" && isWhite))
         continue;
 
+      const logic = pieceRegistry[pieceChar];
       for (let tr = 0; tr < 8; tr++) {
         for (let tc = 0; tc < 8; tc++) {
-          const logic = pieceRegistry[pieceChar];
-
           if (
-            logic.isValidMove(r, c, tr, tc, boardState) &&
+            logic.isValidMove(r, c, tr, tc, boardState, enPassantTarget) &&
             isMoveSafe(r, c, tr, tc)
           ) {
             return false;
@@ -368,30 +368,53 @@ function isCheckmate(color) {
 }
 
 function canCastle(startRow, startCol, endRow, endCol, color) {
-  // 1. Has King moved?
-  if (color === "white" && castleRights.whiteKingMoved) return false;
-  if (color === "black" && castleRights.blackKingMoved) return false;
+  console.log("Checking Castle Rights for:", color);
+  console.log("Current Rights:", castleRights);
 
-  // 2. Currently in Check?
-  if (isSquareUnderAttack(startRow, startCol, boardState, color)) return false;
-
-  const isKingside = endCol > startCol;
-
-  // 3. Has the specific Rook moved?
-  if (color === "white") {
-    if (isKingside && castleRights.whiteRightRookMoved) return false;
-    if (!isKingside && castleRights.whiteLeftRookMoved) return false;
-  } else {
-    if (isKingside && castleRights.blackRightRookMoved) return false;
-    if (!isKingside && castleRights.blackLeftRookMoved) return false;
+  if (color === "white" && castleRights.whiteKingMoved) {
+    console.log("Fail: White King moved");
+    return false;
+  }
+  if (color === "black" && castleRights.blackKingMoved) {
+    console.log("Fail: Black King moved");
+    return false;
   }
 
-  // 4. Passing through Check? (Square king crosses must be safe)
-  const crossCol = isKingside ? 5 : 3;
-  if (isSquareUnderAttack(startRow, crossCol, boardState, color)) return false;
+  if (isSquareUnderAttack(startRow, startCol, boardState, color)) {
+    console.log("Fail: King in Check");
+    return false;
+  }
 
-  // 5. Landing in Check? (Destination must be safe)
-  if (isSquareUnderAttack(endRow, endCol, boardState, color)) return false;
+  const isKingside = endCol > startCol;
+  if (color === "white") {
+    if (isKingside && castleRights.whiteRightRookMoved) {
+      console.log("Fail: White Right Rook moved");
+      return false;
+    }
+    if (!isKingside && castleRights.whiteLeftRookMoved) {
+      console.log("Fail: White Left Rook moved");
+      return false;
+    }
+  } else {
+    if (isKingside && castleRights.blackRightRookMoved) {
+      console.log("Fail: Black Right Rook moved");
+      return false;
+    }
+    if (!isKingside && castleRights.blackLeftRookMoved) {
+      console.log("Fail: Black Left Rook moved");
+      return false;
+    }
+  }
+
+  const crossCol = isKingside ? 5 : 3;
+  if (isSquareUnderAttack(startRow, crossCol, boardState, color)) {
+    console.log("Fail: Path crossed check");
+    return false;
+  }
+  if (isSquareUnderAttack(endRow, endCol, boardState, color)) {
+    console.log("Fail: Destination is check");
+    return false;
+  }
 
   return true;
 }
@@ -399,14 +422,13 @@ function canCastle(startRow, startCol, endRow, endCol, color) {
 function updateCastlingRights(pieceChar, r, c) {
   if (pieceChar === "K") castleRights.whiteKingMoved = true;
   if (pieceChar === "k") castleRights.blackKingMoved = true;
-
   if (pieceChar === "R") {
     if (r === 7 && c === 0) castleRights.whiteLeftRookMoved = true;
     if (r === 7 && c === 7) castleRights.whiteRightRookMoved = true;
   }
   if (pieceChar === "r") {
-    if (r === 7 && c === 0) castleRights.blackLeftRookMoved = true;
-    if (r === 7 && c === 7) castleRights.blackRightRookMoved = true;
+    if (r === 0 && c === 0) castleRights.blackLeftRookMoved = true;
+    if (r === 0 && c === 7) castleRights.blackRightRookMoved = true;
   }
 }
 
@@ -414,7 +436,6 @@ flipBtn.addEventListener("click", () => {
   isFlipped = !isFlipped;
   createBoard();
 });
-
 resetBtn.addEventListener("click", () => {
   resetBoard();
   createBoard();
