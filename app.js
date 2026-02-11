@@ -134,7 +134,6 @@ function onSquareClick(row, col) {
     if (playerTurn === "white" && !isWhitePiece) return;
     if (playerTurn === "black" && isWhitePiece) return;
 
-    console.log(`Selected: ${clickedPieceChar} at [${row}, ${col}]`);
     selectedSquare = { row, col };
     if (clickedSquareDiv) clickedSquareDiv.classList.add("selected");
     return;
@@ -145,9 +144,6 @@ function onSquareClick(row, col) {
     const isClickedWhite = clickedPieceChar === clickedPieceChar.toUpperCase();
     const isCurrentWhite = playerTurn === "white";
     if (isClickedWhite === isCurrentWhite) {
-      console.log(
-        `Switched selection to: ${clickedPieceChar} at [${row}, ${col}]`,
-      );
       createBoard();
       selectedSquare = { row, col };
       const newSquareDiv = document.querySelector(
@@ -164,16 +160,10 @@ function onSquareClick(row, col) {
   const pieceChar = boardState[startRow][startCol];
   const pieceLogic = pieceRegistry[pieceChar];
 
-  console.log(
-    `Attempting move: ${pieceChar} from [${startRow},${startCol}] to [${row},${col}]`,
-  );
-  console.log("Current En Passant Target:", enPassantTarget);
-
   let valid = false;
   let isCastlingMove = false;
 
   if (pieceLogic) {
-    // 1. Check Piece Logic
     valid = pieceLogic.isValidMove(
       startRow,
       startCol,
@@ -182,30 +172,20 @@ function onSquareClick(row, col) {
       boardState,
       enPassantTarget,
     );
-    console.log("Piece Logic Valid?", valid);
 
-    // 2. Check Castling Specifics
     if (
       valid &&
       (pieceChar === "K" || pieceChar === "k") &&
       Math.abs(col - startCol) === 2
     ) {
-      console.log("Detected Castling Attempt...");
       if (canCastle(startRow, startCol, row, col, playerTurn)) {
         isCastlingMove = true;
-        console.log("Castling is LEGAL.");
       } else {
         valid = false;
-        console.log(
-          "Castling is ILLEGAL (Rights lost, path blocked, or check).",
-        );
         alert("Cannot Castle: Check, Moved Previously, or Path Blocked");
       }
-    }
-    // 3. Check Safety (King in Check?)
-    else if (valid) {
+    } else if (valid) {
       const safe = isMoveSafe(startRow, startCol, row, col);
-      console.log("Is Move Safe (King not in check)?", safe);
       if (!safe) {
         valid = false;
         alert("Illegal move: King would be in check!");
@@ -215,25 +195,24 @@ function onSquareClick(row, col) {
 
   // --- Execute Move ---
   if (valid) {
-    console.log("Move Validated. Executing...");
-
-    // EN PASSANT CAPTURE EXECUTION
+    // 1. Handle En Passant Capture
     if (
       pieceChar.toLowerCase() === "p" &&
       col !== startCol &&
       boardState[row][col] === ""
     ) {
-      console.log("Executing En Passant Capture!");
-      const capturedRow = startRow;
-      const captureCol = col;
-      boardState[capturedRow][captureCol] = "";
+      boardState[startRow][col] = "";
     }
 
-    // STANDARD MOVE
+    // 2. Check for Promotion Eligibility
+    const isPromotion =
+      (pieceChar === "P" && row === 0) || (pieceChar === "p" && row === 7);
+
+    // 3. Move the piece
     boardState[row][col] = pieceChar;
     boardState[startRow][startCol] = "";
 
-    // CASTLING EXECUTION
+    // 4. Handle Castling Rook Movement
     if (isCastlingMove) {
       const isKingside = col > startCol;
       const rookStartCol = isKingside ? 7 : 0;
@@ -241,36 +220,46 @@ function onSquareClick(row, col) {
       const rookChar = boardState[row][rookStartCol];
       boardState[row][rookEndCol] = rookChar;
       boardState[row][rookStartCol] = "";
-      console.log(`Rook moved for castling (Kingside: ${isKingside})`);
     }
 
-    updateCastlingRights(pieceChar, startRow, startCol);
+    // Define turn finalization (called immediately or after promotion)
+    const finalizeTurn = () => {
+      updateCastlingRights(pieceChar, startRow, startCol);
 
-    // SET EN PASSANT TARGET
-    if (pieceChar.toLowerCase() === "p" && Math.abs(row - startRow) === 2) {
-      const direction = pieceChar === "P" ? -1 : 1;
-      enPassantTarget = { row: startRow + direction, col: col };
-      console.log("En Passant Target SET to:", enPassantTarget);
+      // Set En Passant Target
+      if (pieceChar.toLowerCase() === "p" && Math.abs(row - startRow) === 2) {
+        const direction = pieceChar === "P" ? -1 : 1;
+        enPassantTarget = { row: startRow + direction, col: col };
+      } else {
+        enPassantTarget = null;
+      }
+
+      playerTurn = playerTurn === "white" ? "black" : "white";
+      isFlipped = !isFlipped;
+      selectedSquare = null;
+      createBoard();
+
+      if (isCheckmate(playerTurn)) {
+        setTimeout(
+          () =>
+            alert(
+              `Checkmate! ${playerTurn === "white" ? "Black" : "White"} wins!`,
+            ),
+          100,
+        );
+      }
+    };
+
+    if (isPromotion) {
+      createBoard(); // Render board so pawn appears on last rank
+      showPromotionUI(row, col, playerTurn, (chosenPiece) => {
+        boardState[row][col] = chosenPiece;
+        finalizeTurn();
+      });
     } else {
-      enPassantTarget = null;
-    }
-
-    playerTurn = playerTurn === "white" ? "black" : "white";
-    isFlipped = !isFlipped;
-    selectedSquare = null;
-    createBoard();
-
-    if (isCheckmate(playerTurn)) {
-      setTimeout(
-        () =>
-          alert(
-            `Checkmate! ${playerTurn === "white" ? "Black" : "White"} wins!`,
-          ),
-        100,
-      );
+      finalizeTurn();
     }
   } else {
-    console.log("Move Rejected.");
     selectedSquare = null;
     createBoard();
   }
