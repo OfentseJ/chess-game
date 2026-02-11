@@ -432,6 +432,30 @@ function updateCastlingRights(pieceChar, r, c) {
   }
 }
 
+function showPromotionUI(row, col, color, onSelect) {
+  const promotionDiv = document.createElement("div");
+  promotionDiv.className = "promotion-menu";
+
+  const options =
+    color === "white" ? ["Q", "R", "B", "N"] : ["q", "r", "b", "n"];
+
+  options.forEach((pieceCode) => {
+    const btn = document.createElement("div");
+    btn.className = "promotion-option";
+    btn.innerHTML = pieceCode[pieceCode];
+    btn.onclick = () => {
+      promotionDiv.remove();
+      onSelect(pieceCode);
+    };
+    promotionDiv.append(btn);
+  });
+
+  const square = document.querySelector(
+    `[data-row="${row}"][data-col="${col}"]`,
+  );
+  square.appendChild(promotionDiv);
+}
+
 flipBtn.addEventListener("click", () => {
   isFlipped = !isFlipped;
   createBoard();
