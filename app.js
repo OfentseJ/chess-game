@@ -251,7 +251,7 @@ function onSquareClick(row, col) {
     };
 
     if (isPromotion) {
-      createBoard(); // Render board so pawn appears on last rank
+      createBoard();
       showPromotionUI(row, col, playerTurn, (chosenPiece) => {
         boardState[row][col] = chosenPiece;
         finalizeTurn();
@@ -431,7 +431,7 @@ function showPromotionUI(row, col, color, onSelect) {
   options.forEach((pieceCode) => {
     const btn = document.createElement("div");
     btn.className = "promotion-option";
-    btn.innerHTML = pieceCode[pieceCode];
+    btn.innerHTML = pieceIcons[pieceCode];
     btn.onclick = () => {
       promotionDiv.remove();
       onSelect(pieceCode);
