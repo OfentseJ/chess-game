@@ -69,6 +69,8 @@ let castleRights = {
 
 let enPassantTarget = null;
 
+let count = 0;
+
 function resetBoard() {
   console.log("--- BOARD RESET ---");
   castleRights = {
@@ -206,6 +208,9 @@ function onSquareClick(row, col) {
 
   // --- Execute Move ---
   if (valid) {
+    const destContent = boardState[row][col];
+    isCapture = destContent !== "";
+
     // 1. Handle En Passant Capture
     if (
       pieceChar.toLowerCase() === "p" &&
@@ -236,7 +241,16 @@ function onSquareClick(row, col) {
     // Define turn finalization (called immediately or after promotion)
     const finalizeTurn = () => {
       updateCastlingRights(pieceChar, startRow, startCol);
-      console.log(getNotation(pieceChar, row, col, squareCoordinates));
+      count++;
+      const notation = `${count}.${getNotation(
+        pieceChar,
+        startRow,
+        startCol,
+        row,
+        col,
+        isCapture,
+      )}`;
+      console.log(notation);
 
       // Set En Passant Target
       if (pieceChar.toLowerCase() === "p" && Math.abs(row - startRow) === 2) {
@@ -457,15 +471,43 @@ function showPromotionUI(row, col, color, onSelect) {
   square.appendChild(promotionDiv);
 }
 
-function getNotation(pieceChar, r, c, squareCoordinates) {
-  color = pieceChar === pieceChar.toUpperCase() ? "white" : "black";
-  const kingLoc = findKing(boardState, color);
-  const piece = pieceChar.toUpperCase() === "P" ? "" : pieceChar.toUpperCase();
-  const square = squareCoordinates[r][c];
-  let notation = `${piece}${square}`;
-  if (isSquareUnderAttack(kingLoc.row, kingLoc.col, boardState, color)) {
-    return notation + "+";
+function getNotation(pieceChar, startRow, startCol, endRow, endCol, isCapture) {
+  const pieceUpper = pieceChar.toUpperCase();
+  isWhite = pieceChar === pieceUpper;
+
+  if (pieceUpper === "K" && Math.abs(startCol - endCol) === 2) {
+    const isKingside = endCol > startCol;
+    return isKingside ? "O-O" : "O-O-O";
   }
+  let notation = "";
+
+  if (pieceUpper === "P") {
+    if (isCapture) {
+      notation += squareCoordinates[startRow][startCol].charAt(0);
+    }
+  } else {
+    notation += pieceUpper;
+  }
+
+  if (isCapture) {
+    notation += "x";
+  }
+
+  notation += squareCoordinates[endRow][endCol];
+
+  const opponentColor = isWhite ? "black" : "white";
+  const enemyKing = findKing(boardState, opponentColor);
+
+  if (
+    isSquareUnderAttack(enemyKing.row, enemyKing.col, boardState, opponentColor)
+  ) {
+    if (isCheckmate(opponentColor)) {
+      notation += "#";
+    } else {
+      notation += "+";
+    }
+  }
+
   return notation;
 }
 
