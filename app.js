@@ -476,7 +476,14 @@ function showPromotionUI(row, col, color, onSelect) {
   options.forEach((pieceCode) => {
     const btn = document.createElement("div");
     btn.className = "promotion-option";
-    btn.innerHTML = pieceIcons[pieceCode];
+
+    const img = document.createElement("img");
+    img.src = getPieceImageSource(pieceCode);
+    img.style.width = "100%";
+    img.style.height = "100%";
+
+    btn.appendChild(img);
+
     btn.onclick = () => {
       promotionDiv.remove();
       onSelect(pieceCode);
