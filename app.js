@@ -40,21 +40,6 @@ let squareCoordinates = [
   ["a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1"],
 ];
 
-const pieceIcons = {
-  p: "♟",
-  r: "♜",
-  n: "♞",
-  b: "♝",
-  q: "♛",
-  k: "♚",
-  P: "♙",
-  R: "♖",
-  N: "♘",
-  B: "♗",
-  Q: "♕",
-  K: "♔",
-};
-
 let playerTurn = "white";
 let isFlipped = false;
 
@@ -97,6 +82,37 @@ function resetBoard() {
   enPassantTarget = null;
 }
 
+function getPieceImageSource(pieceCode) {
+  const isWhite = pieceCode === pieceCode.toUpperCase();
+  const color = isWhite ? "white" : "black";
+  const typeCode = pieceCode.toLowerCase();
+
+  let typeName = "";
+  switch (typeCode) {
+    case "p":
+      typeName = "pawn";
+      break;
+    case "r":
+      typeName = "rook";
+      break;
+    case "n":
+      typeName = "knight";
+      break;
+    case "b":
+      typeName = "bishop";
+      break;
+    case "q":
+      typeName = "Queen";
+      break;
+    case "k":
+      typeName = "king";
+      break;
+    default:
+      return "";
+  }
+  return `images/pieces/${color}-${typeName}.png`;
+}
+
 function createBoard() {
   gameBoard.innerHTML = "";
   const kingLoc = findKing(boardState, playerTurn);
@@ -123,8 +139,11 @@ function createBoard() {
       }
       const pieceCode = boardState[rowIndex][colIndex];
       if (pieceCode != "") {
-        square.innerHTML = pieceIcons[pieceCode];
-        square.classList.add("piece");
+        const img = document.createElement("img");
+        img.src = getPieceImageSource(pieceCode);
+        img.classList.add("piece");
+        img.draggable = false;
+        square.appendChild("img");
       }
       square.addEventListener("click", () => {
         onSquareClick(rowIndex, colIndex);
