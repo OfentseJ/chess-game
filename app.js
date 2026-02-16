@@ -102,7 +102,7 @@ function getPieceImageSource(pieceCode) {
       typeName = "bishop";
       break;
     case "q":
-      typeName = "Queen";
+      typeName = "queen";
       break;
     case "k":
       typeName = "king";
