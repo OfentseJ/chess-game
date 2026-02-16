@@ -143,7 +143,7 @@ function createBoard() {
         img.src = getPieceImageSource(pieceCode);
         img.classList.add("piece");
         img.draggable = false;
-        square.appendChild("img");
+        square.appendChild(img);
       }
       square.addEventListener("click", () => {
         onSquareClick(rowIndex, colIndex);
