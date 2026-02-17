@@ -112,7 +112,7 @@ function getPieceImageSource(pieceCode) {
   }
   return `images/pieces/${color}-${typeName}.png`;
 }
-
+/*
 function createBoard() {
   gameBoard.innerHTML = "";
   const kingLoc = findKing(boardState, playerTurn);
@@ -151,6 +151,35 @@ function createBoard() {
       gameBoard.append(square);
     });
   });
+}
+*/
+
+function initBoard() {
+  gameBoard.innerHTML = "";
+  const order = isFlipped ? [7, 6, 5, 4, 3, 2, 1, 0] : [0, 1, 2, 3, 4, 5, 6, 7];
+
+  order.forEach((rowIndex) => {
+    order.forEach((colIndex) => {
+      const square = document.createElement("div");
+      square.classList.add("square");
+
+      square.dataset.row = rowIndex;
+      square.dataset.col = colIndex;
+
+      const isBeige = (rowIndex + colIndex) % 2 === 0;
+      square.classList.add(isBeige ? "beige" : "brown");
+
+      const img = document.createElement("img");
+      img.classList.add("piece");
+      square.appendChild(img);
+
+      square.addEventListener("click", () => {
+        onSquareClick(rowIndex, colIndex);
+      });
+      gameBoard.append(square);
+    });
+  });
+  renderBoard();
 }
 
 function onSquareClick(row, col) {
