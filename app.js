@@ -182,6 +182,55 @@ function initBoard() {
   renderBoard();
 }
 
+function renderBoard() {
+  // clear old highlights
+  document.querySelectorAll(".square").forEach((sq) => {
+    square.classList.remove("selected", "check");
+  });
+
+  // Highlight king in check
+  const kingLoc = findKing(boardState, playerTurn);
+  if (
+    kingLoc &&
+    isSquareUnderAttack(kingLoc.row, kingLoc.col, boardState, playerTurn)
+  ) {
+    const kingSquare = document.querySelector(
+      `[data-row="${kingLoc.row}"][data-col="${kingLoc.col}"]`,
+    );
+    if (kingSquare) kingSquare.classList.add("check");
+  }
+
+  // Highlight selection
+  if (selectedSquare) {
+    const selSq = document.querySelector(
+      `[data-row="${selectedSquare.row}"][data-col="${selectedSquare.col}"]`,
+    );
+    if (selSq) selSq.classList.add("selected");
+  }
+
+  // Update Pieces
+  for (let r = 0; r < 8; r++) {
+    for (let c = 0; c < 8; c++) {
+      const square = document.querySelector(
+        `[data-row="${r}"][data-col="${c}"]`,
+      );
+      const img = square.querySelector("img");
+      const piece = boardState[r][c];
+
+      if (pieceCode !== "") {
+        const newSrc = getPieceImageSource(pieceCode);
+        if (!img.src.includes(newSrc)) {
+          img.src = newSrc;
+        }
+        img.style.display = "block";
+      } else {
+        img.style.display = "none";
+        img.removeAttribute("src");
+      }
+    }
+  }
+}
+
 function onSquareClick(row, col) {
   const clickedPieceChar = boardState[row][col];
   const clickedSquareDiv = document.querySelector(
