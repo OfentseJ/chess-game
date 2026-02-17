@@ -185,7 +185,7 @@ function initBoard() {
 function renderBoard() {
   // clear old highlights
   document.querySelectorAll(".square").forEach((sq) => {
-    square.classList.remove("selected", "check");
+    sq.classList.remove("selected", "check");
   });
 
   // Highlight king in check
@@ -215,7 +215,7 @@ function renderBoard() {
         `[data-row="${r}"][data-col="${c}"]`,
       );
       const img = square.querySelector("img");
-      const piece = boardState[r][c];
+      const pieceCode = boardState[r][c];
 
       if (pieceCode !== "") {
         const newSrc = getPieceImageSource(pieceCode);
@@ -254,7 +254,7 @@ function onSquareClick(row, col) {
     const isClickedWhite = clickedPieceChar === clickedPieceChar.toUpperCase();
     const isCurrentWhite = playerTurn === "white";
     if (isClickedWhite === isCurrentWhite) {
-      createBoard();
+      renderBoard();
       selectedSquare = { row, col };
       const newSquareDiv = document.querySelector(
         `[data-row="${row}"][data-col="${col}"]`,
@@ -360,7 +360,7 @@ function onSquareClick(row, col) {
       playerTurn = playerTurn === "white" ? "black" : "white";
       isFlipped = !isFlipped;
       selectedSquare = null;
-      createBoard();
+      initBoard();
 
       if (isCheckmate(playerTurn)) {
         setTimeout(
@@ -374,7 +374,7 @@ function onSquareClick(row, col) {
     };
 
     if (isPromotion) {
-      createBoard();
+      renderBoard();
       showPromotionUI(row, col, playerTurn, (chosenPiece) => {
         boardState[row][col] = chosenPiece;
         finalizeTurn();
@@ -384,7 +384,7 @@ function onSquareClick(row, col) {
     }
   } else {
     selectedSquare = null;
-    createBoard();
+    renderBoard();
   }
 }
 
@@ -617,11 +617,11 @@ function getNotation(pieceChar, startRow, startCol, endRow, endCol, isCapture) {
 
 flipBtn.addEventListener("click", () => {
   isFlipped = !isFlipped;
-  createBoard();
+  initBoard();
 });
 resetBtn.addEventListener("click", () => {
   resetBoard();
-  createBoard();
+  initBoard();
 });
 
-createBoard();
+initBoard();
