@@ -314,6 +314,27 @@ function onSquareClick(row, col) {
     const destContent = boardState[row][col];
     isCapture = destContent !== "";
 
+    let capturedPiece = null;
+
+    if (destContent !== "") {
+      capturedPiece = destContent;
+    } else if (
+      pieceChar.toLowerCase() === "p" &&
+      col !== startCol &&
+      boardState[row][col]
+    ) {
+      capturedPiece = boardState[startRow][col];
+    }
+
+    if (capturedPiece) {
+      if (playerTurn === "white") {
+        capturedByWhite.push(capturedPiece);
+      } else {
+        capturedByBlack.push(capturedPiece);
+      }
+      updateCapturedUI();
+    }
+
     // 1. Handle En Passant Capture
     if (
       pieceChar.toLowerCase() === "p" &&
