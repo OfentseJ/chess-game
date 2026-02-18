@@ -56,6 +56,9 @@ let enPassantTarget = null;
 
 let notationCount = 0;
 
+let capturedByWhite = [];
+let capturedByBlack = [];
+
 function resetBoard() {
   console.log("--- BOARD RESET ---");
   castleRights = {
@@ -80,6 +83,9 @@ function resetBoard() {
   isFlipped = false;
   selectedSquare = null;
   enPassantTarget = null;
+  capturedByWhite = [];
+  capturedByBlack = [];
+  updateCapturedUI();
 }
 
 function getPieceImageSource(pieceCode) {
@@ -613,6 +619,24 @@ function getNotation(pieceChar, startRow, startCol, endRow, endCol, isCapture) {
   }
 
   return notation;
+}
+
+function updateCapturedUI() {
+  const whiteZone = document.getElementById("captured-by-white");
+  const blackZone = document.getElementById("captured-by-black");
+
+  const fillZone = (zone, pieces) => {
+    zone.innerHTML = "";
+    pieces.forEach((pieceCode) => {
+      const img = document.createElement("img");
+      img.src = getPieceImageSource(pieceCode);
+      img.classList.add("captured-piece");
+      zone.appendChild(img);
+    });
+  };
+
+  fillZone(whiteZone, capturedByWhite);
+  fillZone(blackZone, capturedByBlack);
 }
 
 flipBtn.addEventListener("click", () => {
