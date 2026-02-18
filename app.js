@@ -54,7 +54,7 @@ let castleRights = {
 
 let enPassantTarget = null;
 
-let count = 0;
+let notationCount = 0;
 
 function resetBoard() {
   console.log("--- BOARD RESET ---");
@@ -338,8 +338,8 @@ function onSquareClick(row, col) {
     // Define turn finalization (called immediately or after promotion)
     const finalizeTurn = () => {
       updateCastlingRights(pieceChar, startRow, startCol);
-      count++;
-      const notation = `${count}.${getNotation(
+      notationCount++;
+      const notation = `${notationCount}.${getNotation(
         pieceChar,
         startRow,
         startCol,
