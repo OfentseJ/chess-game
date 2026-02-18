@@ -1,25 +1,28 @@
 body {
     background-color: #302e2b;
     color: white;
-    font-family: sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
     margin: 0;
 }
 
 .app-container {
-    text-align: center;
-}
-
-.controls-container{
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap:8px
+    gap: 10px;
 }
 
+h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #eeeeee;
+}
+
+/* --- BOARD LAYOUT --- */
 #gameboard {
     width: 400px;
     height: 400px;
@@ -28,15 +31,14 @@ body {
     grid-template-columns: repeat(8, 1fr);
     grid-template-rows: repeat(8, 1fr);
     border: 5px solid #5a5a5a;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
 }
 
-/* THE SQUARES */
 .square {
     position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 36px;
     cursor: pointer;
     user-select: none;
 }
@@ -52,33 +54,80 @@ body {
     color: black;
 }
 
+/* --- PIECES --- */
 .piece {
-    transition: transform 1s;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    pointer-events: none;
 }
 
-.controls {
-    margin-top: 20px;
+/* --- CAPTURED AREAS --- */
+.captured-area {
+    width: 400px;
+    min-height: 30px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 4px;
+    box-sizing: border-box;
+    border-radius: 4px;
+}
+
+#captured-by-black {
+    border-bottom: 2px solid #555;
+}
+
+#captured-by-white {
+    border-top: 2px solid #555;
+}
+
+.captured-piece {
+    height: 25px;
+    width: 25px;
+}
+
+/* --- CONTROLS --- */
+.controls-container {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
 }
 
 button {
     padding: 10px 20px;
-    font-size: 16px;
+    font-size: 14px;
+    font-weight: bold;
     cursor: pointer;
+    background-color: #4a4a4a;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    transition: background 0.2s;
 }
 
+button:hover {
+    background-color: #6a6a6a;
+}
+
+/* --- HIGHLIGHTS --- */
 .selected {
-    background-color: yellow !important;
+    background-color: rgba(255, 255, 0, 0.5) !important;
 }
 
-.check{
-   background-color: #ff4d4d !important;
+.check {
+    background-color: rgba(255, 0, 0, 0.6) !important;
 }
 
+/* --- PROMOTION --- */
 .promotion-menu {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
+    height: 100%;
     background: white;
     border: 1px solid black;
     z-index: 100;
@@ -87,37 +136,14 @@ button {
 }
 
 .promotion-option {
+    flex: 1;
     cursor: pointer;
-    font-size: 2rem;
-    text-align: center;
     background: #eee;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .promotion-option:hover {
     background: #ccc;
-}
-
-.piece{
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    display: block;
-    pointer-events: none;
-}
-
-/* Captured Pieces*/
-.captured-area{
-    height: 40px;
-    display: flex;
-    gap: 5px;
-    background-color: #f0f0f0;
-    padding: 5px;
-    border-radius: 4px;
-    margin: 5px 0;
-    align-items: center;
-}
-
-.captured-piece{
-    height: 30px;
-    width: 30px;
 }
