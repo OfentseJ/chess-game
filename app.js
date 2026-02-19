@@ -86,6 +86,8 @@ function resetBoard() {
   capturedByWhite = [];
   capturedByBlack = [];
   updateCapturedUI();
+  notationCount = 0;
+  document.getElementById("move-history").innerHTML = "";
 }
 
 function getPieceImageSource(pieceCode) {
@@ -321,7 +323,7 @@ function onSquareClick(row, col) {
     } else if (
       pieceChar.toLowerCase() === "p" &&
       col !== startCol &&
-      boardState[row][col]
+      boardState[row][col] === ""
     ) {
       capturedPiece = boardState[startRow][col];
     }
@@ -365,16 +367,32 @@ function onSquareClick(row, col) {
     // Define turn finalization (called immediately or after promotion)
     const finalizeTurn = () => {
       updateCastlingRights(pieceChar, startRow, startCol);
-      notationCount++;
-      const notation = `${notationCount}.${getNotation(
+      const notation = getNotation(
         pieceChar,
         startRow,
         startCol,
         row,
         col,
         isCapture,
-      )}`;
-      console.log(notation);
+      );
+
+      if (playerTurn === "white") notationCount++;
+
+      // Add to UI
+      const historyBox = document.getElementById("move-history");
+      const moveSpan = document.createElement("span");
+      moveSpan.classList.add("move-record");
+
+      // If it's white's turn, add the turn number. Otherwise, just add the move.
+      if (playerTurn === "white") {
+        moveSpan.innerHTML = `<span class="move-number">${notationCount}.</span>${notation}`;
+      } else {
+        moveSpan.innerHTML = notation;
+      }
+
+      historyBox.appendChild(moveSpan);
+
+      historyBox.scrollLeft = historyBox.scrollWidth;
 
       // Set En Passant Target
       if (pieceChar.toLowerCase() === "p" && Math.abs(row - startRow) === 2) {

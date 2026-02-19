@@ -85,8 +85,8 @@ h1 {
 }
 
 .captured-piece {
-    height: 25px;
-    width: 25px;
+    height: 20px;
+    width: 20px;
 }
 
 /* --- CONTROLS --- */
@@ -151,39 +151,34 @@ button:hover {
 /*-- MOVE HISTORY --*/
 .history-container{
     width: 400px;
-    margin-top: 10px;
+    height: 36px;
     background-color: #262421;
-    border-radius: 5px;
-    padding: 10px;
+    border-radius: 4px;
+    padding: 8px 12px;
     box-sizing: border-box;
 }
 
-
-.history-container h3{
-    margin: 0 0 10px 0;
-    font-size: 1rem;
+.move-history-box{
+    display: flex;
+    overflow-x: auto;
+    white-space: nowrap;
+    gap: 12px;
+    font-size: 14px;
     color: #eeeeee;
-    text-align: left;
+    align-items: center;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
 
-.move-history-box{
-    height: 120px;
-    overflow-y: auto;
-    display: flex;
-    flex-wrap: wrap;
-    align-content: flex-start;
-    gap: 10px;
-    font-size: 14px;
-    color: #b3b3b3;
+.move-history-box::-webkit-scrollbar {
+    display: none;
 }
 
 .move-record{
-    width: 45%;
-    display: flex;
-    gap: 5px;
+    display: inline-block;
 }
 
 .move-number {
     color: #888;
-    width: 20px;
+    margin-right: 2px;
 }
