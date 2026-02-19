@@ -147,3 +147,43 @@ button:hover {
 .promotion-option:hover {
     background: #ccc;
 }
+
+/*-- MOVE HISTORY --*/
+.history-container{
+    width: 400px;
+    margin-top: 10px;
+    background-color: #262421;
+    border-radius: 5px;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+
+.history-container h3{
+    margin: 0 0 10px 0;
+    font-size: 1rem;
+    color: #eeeeee;
+    text-align: left;
+}
+
+.move-history-box{
+    height: 120px;
+    overflow-y: auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    gap: 10px;
+    font-size: 14px;
+    color: #b3b3b3;
+}
+
+.move-record{
+    width: 45%;
+    display: flex;
+    gap: 5px;
+}
+
+.move-number {
+    color: #888;
+    width: 20px;
+}
