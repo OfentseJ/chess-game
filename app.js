@@ -2,6 +2,7 @@ const gameBoard = document.querySelector("#gameboard");
 const flipBtn = document.querySelector("#flip-btn");
 const resetBtn = document.querySelector("#reset-btn");
 let selectedSquare = null;
+let lastMove = null;
 
 const pieceRegistry = {
   p: new Pawn("black"),
@@ -82,6 +83,7 @@ function resetBoard() {
   playerTurn = "white";
   isFlipped = false;
   selectedSquare = null;
+  lastMove = null;
   enPassantTarget = null;
   capturedByWhite = [];
   capturedByBlack = [];
@@ -195,6 +197,17 @@ function renderBoard() {
   document.querySelectorAll(".square").forEach((sq) => {
     sq.classList.remove("selected", "check");
   });
+
+  if (lastMove) {
+    const prevStartSq = document.querySelector(
+      `[data-row="${lastMove.startRow}"][data-col="${lastMove.startCol}"]`,
+    );
+    const prevEndSq = document.querySelector(
+      `[data-row="${lastMove.endRow}"][data-col="${lastMove.endCol}"]`,
+    );
+    if (prevStartSq) prevStartSq.classList.add("highlight");
+    if (prevEndSq) prevEndSq.classList.add("highlight");
+  }
 
   // Highlight king in check
   const kingLoc = findKing(boardState, playerTurn);
@@ -404,6 +417,7 @@ function onSquareClick(row, col) {
 
       playerTurn = playerTurn === "white" ? "black" : "white";
       isFlipped = !isFlipped;
+      lastMove = { startRow, startCol, endRow: row, endCol: col };
       selectedSquare = null;
       initBoard();
 
