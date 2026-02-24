@@ -663,6 +663,30 @@ function updateCapturedUI() {
   fillZone(whiteZone, capturedByWhite);
   fillZone(blackZone, capturedByBlack);
 }
+function undoMove() {
+  if (gameHistory.length === 0) return;
+
+  const prevState = gameHistory.pop();
+
+  boardState = prevState.board;
+  playerTurn = prevState.turn;
+  castleRights = prevState.castle;
+  enPassantTarget = prevState.enPassant;
+  capturedByWhite = prevState.capWhite;
+  capturedByBlack = prevState.capBlack;
+  notationCount = prevState.notCount;
+  lastMove = prevState.lastMv;
+  isFlipped = prevState.flipped;
+
+  updateCapturedUI();
+  selectedSquare = null;
+
+  const historyBox = document.getElementById("move-history");
+  if (history.lastChild) {
+    historyBox.removeChild(historyBox.lastChild);
+  }
+  initBoard();
+}
 
 flipBtn.addEventListener("click", () => {
   isFlipped = !isFlipped;
