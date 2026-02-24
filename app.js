@@ -89,6 +89,7 @@ function resetBoard() {
   enPassantTarget = null;
   capturedByWhite = [];
   capturedByBlack = [];
+  gameHistory = [];
   updateCapturedUI();
   notationCount = 0;
   document.getElementById("move-history").innerHTML = "";
@@ -687,6 +688,8 @@ function undoMove() {
   }
   initBoard();
 }
+
+undoBtn.addEventListener("click", undoMove);
 
 flipBtn.addEventListener("click", () => {
   isFlipped = !isFlipped;
