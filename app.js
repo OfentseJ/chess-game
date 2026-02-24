@@ -683,7 +683,7 @@ function undoMove() {
   selectedSquare = null;
 
   const historyBox = document.getElementById("move-history");
-  if (history.lastChild) {
+  if (historyBox.lastChild) {
     historyBox.removeChild(historyBox.lastChild);
   }
   initBoard();
