@@ -1,6 +1,7 @@
 const gameBoard = document.querySelector("#gameboard");
 const flipBtn = document.querySelector("#flip-btn");
 const resetBtn = document.querySelector("#reset-btn");
+const undoBtn = document.querySelector("#undo-btn");
 let selectedSquare = null;
 let lastMove = null;
 
@@ -59,6 +60,7 @@ let notationCount = 0;
 
 let capturedByWhite = [];
 let capturedByBlack = [];
+let gameHistory = [];
 
 function resetBoard() {
   console.log("--- BOARD RESET ---");
@@ -122,48 +124,6 @@ function getPieceImageSource(pieceCode) {
   }
   return `images/pieces/${color}-${typeName}.png`;
 }
-/*
-function createBoard() {
-  gameBoard.innerHTML = "";
-  const kingLoc = findKing(boardState, playerTurn);
-  let isCheck = false;
-  if (kingLoc) {
-    isCheck = isSquareUnderAttack(
-      kingLoc.row,
-      kingLoc.col,
-      boardState,
-      playerTurn,
-    );
-  }
-  const order = isFlipped ? [7, 6, 5, 4, 3, 2, 1, 0] : [0, 1, 2, 3, 4, 5, 6, 7];
-  order.forEach((rowIndex) => {
-    order.forEach((colIndex) => {
-      const square = document.createElement("div");
-      square.classList.add("square");
-      square.dataset.row = rowIndex;
-      square.dataset.col = colIndex;
-      const isBeige = (rowIndex + colIndex) % 2 === 0;
-      square.classList.add(isBeige ? "beige" : "brown");
-      if (isCheck && kingLoc.row === rowIndex && kingLoc.col == colIndex) {
-        square.classList.add("check");
-      }
-      const pieceCode = boardState[rowIndex][colIndex];
-      if (pieceCode != "") {
-        const img = document.createElement("img");
-        img.src = getPieceImageSource(pieceCode);
-        img.classList.add("piece");
-        img.draggable = false;
-        square.appendChild(img);
-      }
-      square.addEventListener("click", () => {
-        onSquareClick(rowIndex, colIndex);
-      });
-      gameBoard.append(square);
-    });
-  });
-}
-*/
-
 function initBoard() {
   gameBoard.innerHTML = "";
   const order = isFlipped ? [7, 6, 5, 4, 3, 2, 1, 0] : [0, 1, 2, 3, 4, 5, 6, 7];
@@ -326,6 +286,18 @@ function onSquareClick(row, col) {
 
   // --- Execute Move ---
   if (valid) {
+    gameHistory.push({
+      board: boardState.map((row) => [...row]),
+      turn: playerTurn,
+      castle: { ...castleRights },
+      enPassant: enPassantTarget ? { ...enPassantTarget } : null,
+      capWhite: [...capturedByWhite],
+      capBlack: [...capturedByBlack],
+      notCount: notationCount,
+      lastMv: lastMove ? { ...lastMove } : null,
+      flipped: isFlipped,
+    });
+
     const destContent = boardState[row][col];
     isCapture = destContent !== "";
 
