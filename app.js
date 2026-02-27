@@ -402,6 +402,10 @@ function onSquareClick(row, col) {
             ),
           100,
         );
+      } else if (isStalemate(playerTurn)) {
+        setTimeout(() => alert("Draw by Stalemate!"), 100);
+      } else if (isInsufficientMaterial()) {
+        setTimeout(() => alert("Draw by Insufficient Material!"), 100);
       }
     };
 
