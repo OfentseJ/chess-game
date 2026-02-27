@@ -483,32 +483,20 @@ function isMoveSafe(startRow, startCol, endRow, endCol) {
 
 function isCheckmate(color) {
   const kingLoc = findKing(boardState, color);
+
   if (!isSquareUnderAttack(kingLoc.row, kingLoc.col, boardState, color))
     return false;
 
-  // Brute force check all moves... (simplified for brevity)
-  for (let r = 0; r < 8; r++) {
-    for (let c = 0; c < 8; c++) {
-      const pieceChar = boardState[r][c];
-      if (!pieceChar) continue;
-      const isWhite = pieceChar === pieceChar.toUpperCase();
-      if ((color === "white" && !isWhite) || (color === "black" && isWhite))
-        continue;
+  return !hasLegalMoves(color);
+}
 
-      const logic = pieceRegistry[pieceChar];
-      for (let tr = 0; tr < 8; tr++) {
-        for (let tc = 0; tc < 8; tc++) {
-          if (
-            logic.isValidMove(r, c, tr, tc, boardState, enPassantTarget) &&
-            isMoveSafe(r, c, tr, tc)
-          ) {
-            return false;
-          }
-        }
-      }
-    }
-  }
-  return true;
+function isStalemate(color) {
+  const kingLoc = findKing(boardState, color);
+
+  if (isSquareUnderAttack(kingLoc.row, kingLoc.col, boardState, color))
+    return false;
+
+  return !hasLegalMoves(color);
 }
 
 function canCastle(startRow, startCol, endRow, endCol, color) {
