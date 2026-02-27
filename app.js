@@ -689,6 +689,34 @@ function undoMove() {
   initBoard();
 }
 
+function hasLegalMoves(color) {
+  for (let r = 0; r < 8; r++) {
+    for (let c = 0; c < 8; c++) {
+      const pieceChar = boardState[r][c];
+      if (!pieceChar) continue;
+
+      const isWhite = pieceChar === pieceChar.toUpperCase();
+      if ((color === "white" && !isWhite) || (color === "black" && isWhite))
+        continue;
+
+      const logic = pieceRegistry[pieceChar];
+      if (!logic) continue;
+
+      for (let tr = 0; tr < 8; tr++) {
+        for (let tc = 0; tc < 8; tc++) {
+          if (
+            logic.isValidMove(r, c, tr, tc, boardState, enPassantTarget) &&
+            isMoveSafe(r, c, tr, tc)
+          ) {
+            return true;
+          }
+        }
+      }
+    }
+  }
+  return false;
+}
+
 undoBtn.addEventListener("click", undoMove);
 
 flipBtn.addEventListener("click", () => {
