@@ -705,6 +705,26 @@ function hasLegalMoves(color) {
   return false;
 }
 
+function isInsufficientMaterial() {
+  const pieces = [];
+  for (let r = 0; r < 8; r++) {
+    for (let c = 0; c < 8; c++) {
+      if (boardState[r][c] !== "") {
+        pieces.push(boardState[r][c]);
+      }
+    }
+  }
+
+  if (pieces.length === 2) return true;
+
+  if (pieces.length === 3) {
+    const hasMinorPiece = pieces.some((p) => ["b", "B", "n", "N"].includes(p));
+    if (hasMinorPiece) return true;
+  }
+
+  return false;
+}
+
 undoBtn.addEventListener("click", undoMove);
 
 flipBtn.addEventListener("click", () => {
