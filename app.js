@@ -65,6 +65,8 @@ let gameHistory = [];
 let halfMoveClock = 0;
 let positionHistory = {};
 
+let isGameOver = false;
+
 function resetBoard() {
   console.log("--- BOARD RESET ---");
   castleRights = {
@@ -98,6 +100,7 @@ function resetBoard() {
   document.getElementById("move-history").innerHTML = "";
   halfMoveClock = 0;
   positionHistory = {};
+  isGameOver = false;
 }
 
 function getPieceImageSource(pieceCode) {
@@ -219,6 +222,8 @@ function renderBoard() {
 }
 
 function onSquareClick(row, col) {
+  if (isGameOver) return;
+
   const clickedPieceChar = boardState[row][col];
   const clickedSquareDiv = document.querySelector(
     `[data-row="${row}"][data-col="${col}"]`,
@@ -418,6 +423,7 @@ function onSquareClick(row, col) {
       initBoard();
 
       if (isCheckmate(playerTurn)) {
+        isGameOver = true;
         setTimeout(
           () =>
             alert(
@@ -426,12 +432,16 @@ function onSquareClick(row, col) {
           100,
         );
       } else if (isStalemate(playerTurn)) {
+        isGameOver = true;
         setTimeout(() => alert("Draw by Stalemate!"), 100);
       } else if (isInsufficientMaterial()) {
+        isGameOver = true;
         setTimeout(() => alert("Draw by Insufficient Material!"), 100);
       } else if (halfMoveClock >= 100) {
+        isGameOver = true;
         setTimeout(() => alert("Draw by 50-Move Rule!"), 100);
       } else if (positionHistory[currentPos] >= 3) {
+        isGameOver = true;
         setTimeout(() => alert("Draw by Three-fold Repetition!"), 100);
       }
     };
@@ -707,6 +717,8 @@ function undoMove() {
   if (historyBox.lastChild) {
     historyBox.removeChild(historyBox.lastChild);
   }
+
+  isGameOver = false;
   initBoard();
 }
 
