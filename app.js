@@ -302,6 +302,8 @@ function onSquareClick(row, col) {
       notCount: notationCount,
       lastMv: lastMove ? { ...lastMove } : null,
       flipped: isFlipped,
+      halfClock: halfMoveClock,
+      posHistory: { ...positionHistory },
     });
 
     const destContent = boardState[row][col];
@@ -394,6 +396,22 @@ function onSquareClick(row, col) {
       }
 
       playerTurn = playerTurn === "white" ? "black" : "white";
+
+      // 50-Move Rule Tracker
+      if (isCapture || pieceChar.toLowerCase === "p") {
+        halfMoveClock = 0;
+      } else {
+        halfMoveClock++;
+      }
+
+      // Three-fold Repetition Tracker
+      const currentPos = generatePositionString();
+      if (positionHistory[currentPos]) {
+        positionHistory[currentPos]++;
+      } else {
+        positionHistory[currentPos] = 1;
+      }
+
       isFlipped = !isFlipped;
       lastMove = { startRow, startCol, endRow: row, endCol: col };
       selectedSquare = null;
@@ -411,6 +429,10 @@ function onSquareClick(row, col) {
         setTimeout(() => alert("Draw by Stalemate!"), 100);
       } else if (isInsufficientMaterial()) {
         setTimeout(() => alert("Draw by Insufficient Material!"), 100);
+      } else if (halfMoveClock >= 100) {
+        setTimeout(() => alert("Draw by 50-Move Rule!"), 100);
+      } else if (positionHistory[currentPos] >= 3) {
+        setTimeout(() => alert("Draw by Three-fold Repetition!"), 100);
       }
     };
 
@@ -675,6 +697,8 @@ function undoMove() {
   notationCount = prevState.notCount;
   lastMove = prevState.lastMv;
   isFlipped = prevState.flipped;
+  halfMoveClock = prevState.halfClock;
+  positionHistory = prevState.posHistory;
 
   updateCapturedUI();
   selectedSquare = null;
