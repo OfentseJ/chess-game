@@ -62,6 +62,9 @@ let capturedByWhite = [];
 let capturedByBlack = [];
 let gameHistory = [];
 
+let halfMoveClock = 0;
+let positionHistory = {};
+
 function resetBoard() {
   console.log("--- BOARD RESET ---");
   castleRights = {
@@ -93,6 +96,8 @@ function resetBoard() {
   updateCapturedUI();
   notationCount = 0;
   document.getElementById("move-history").innerHTML = "";
+  halfMoveClock = 0;
+  positionHistory = {};
 }
 
 function getPieceImageSource(pieceCode) {
@@ -727,6 +732,17 @@ function isInsufficientMaterial() {
   }
 
   return false;
+}
+
+function generatePositionString() {
+  let str = boardState.map((row) => row.join(".")).join("|");
+  str += `~${playerTurn}`;
+  str += `~${castleRights.whiteKingMoved ? 1 : 0}${castleRights.whiteLeftRookMoved ? 1 : 0}${castleRights.whiteRightRookMoved ? 1 : 0}`;
+  str += `${castleRights.blackKingMoved ? 1 : 0}${castleRights.blackLeftRookMoved ? 1 : 0}${castleRights.blackRightRookMoved ? 1 : 0}`;
+
+  str += `~${enPassantTarget ? enPassantTarget.row + "," + enPassantTarget.col : "-"}`;
+
+  return str;
 }
 
 undoBtn.addEventListener("click", undoMove);
