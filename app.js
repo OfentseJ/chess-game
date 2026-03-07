@@ -475,7 +475,7 @@ function onSquareClick(row, col) {
 
         if (isCheck) {
           playSound(checkSound);
-        } else if (isCapture) {
+        } else if (isCapture && !isPromotion) {
           playSound(captureSound);
         } else if (isCastlingMove) {
           playSound(castleSound);
