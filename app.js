@@ -67,6 +67,15 @@ let positionHistory = {};
 
 let isGameOver = false;
 
+// Audio Set up
+const moveSound = new Audio("audio/move.mp3");
+const captureSound = new Audio("audio/capture.mp3");
+const checkSound = new Audio("audio/move-check.mp3");
+const gameEndSound = new Audio("audio/game-end.mp3");
+const promoteSound = new Audio("audio/promote.mp3");
+const castleSound = new Audio("audio/castle.mp3");
+const illegalSound = new Audio("audio/illegal.mp3");
+
 function resetBoard() {
   console.log("--- BOARD RESET ---");
   castleRights = {
@@ -779,6 +788,11 @@ function generatePositionString() {
   str += `~${enPassantTarget ? enPassantTarget.row + "," + enPassantTarget.col : "-"}`;
 
   return str;
+}
+
+function playSound(audioElement) {
+  audioElement.currentTime = 0;
+  audioElement.play().catch((e) => console.log("Audio play prevented:", e));
 }
 
 undoBtn.addEventListener("click", undoMove);
