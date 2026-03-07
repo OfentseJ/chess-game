@@ -293,13 +293,11 @@ function onSquareClick(row, col) {
         isCastlingMove = true;
       } else {
         valid = false;
-        alert("Cannot Castle: Check, Moved Previously, or Path Blocked");
       }
     } else if (valid) {
       const safe = isMoveSafe(startRow, startCol, row, col);
       if (!safe) {
         valid = false;
-        alert("Illegal move: King would be in check!");
       }
     }
   }
@@ -431,8 +429,12 @@ function onSquareClick(row, col) {
       selectedSquare = null;
       initBoard();
 
+      let gameOverTriggered = false;
+
       if (isCheckmate(playerTurn)) {
         isGameOver = true;
+        gameOverTriggered = true;
+        playSound(gameEndSound);
         setTimeout(
           () =>
             alert(
@@ -442,16 +444,46 @@ function onSquareClick(row, col) {
         );
       } else if (isStalemate(playerTurn)) {
         isGameOver = true;
+        gameOverTriggered = true;
+        playSound(gameEndSound);
         setTimeout(() => alert("Draw by Stalemate!"), 100);
       } else if (isInsufficientMaterial()) {
         isGameOver = true;
+        gameOverTriggered = true;
+        playSound(gameEndSound);
         setTimeout(() => alert("Draw by Insufficient Material!"), 100);
       } else if (halfMoveClock >= 100) {
         isGameOver = true;
+        gameOverTriggered = true;
+        playSound(gameEndSound);
         setTimeout(() => alert("Draw by 50-Move Rule!"), 100);
       } else if (positionHistory[currentPos] >= 3) {
         isGameOver = true;
+        gameOverTriggered = true;
+        playSound(gameEndSound);
         setTimeout(() => alert("Draw by Three-fold Repetition!"), 100);
+      }
+
+      if (!gameOverTriggered) {
+        const enemyKing = findKing(boardState, playerTurn);
+        const isCheck = isSquareUnderAttack(
+          enemyKing.row,
+          enemyKing.col,
+          boardState,
+          playerTurn,
+        );
+
+        if (isCheck) {
+          playSound(checkSound);
+        } else if (isCapture) {
+          playSound(captureSound);
+        } else if (isCastlingMove) {
+          playSound(castleSound);
+        } else if (isPromotion) {
+          playSound(promoteSound);
+        } else {
+          playSound(moveSound);
+        }
       }
     };
 
@@ -465,6 +497,7 @@ function onSquareClick(row, col) {
       finalizeTurn();
     }
   } else {
+    playSound(illegalSound);
     selectedSquare = null;
     renderBoard();
   }
