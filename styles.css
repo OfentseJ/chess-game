@@ -1,3 +1,7 @@
+body, .square, button{
+    touch-action: manipulation;    
+}
+
 body {
     background-color: #302e2b;
     color: white;
