@@ -110,6 +110,7 @@ function resetBoard() {
   halfMoveClock = 0;
   positionHistory = {};
   isGameOver = false;
+  ChessTimer.reset();
 }
 
 function getPieceImageSource(pieceCode) {
@@ -316,6 +317,8 @@ function onSquareClick(row, col) {
       flipped: isFlipped,
       halfClock: halfMoveClock,
       posHistory: { ...positionHistory },
+      wTimer: ChessTimer.whiteTime,
+      bTime: ChessTimer.blackTime,
     });
 
     const destContent = boardState[row][col];
@@ -408,6 +411,12 @@ function onSquareClick(row, col) {
       }
 
       playerTurn = playerTurn === "white" ? "black" : "white";
+
+      ChessTimer.start(playerTurn, (losingColor) => {
+        isGameOver = true;
+        const winningColor = losingColor === "white" ? "Black" : "White";
+        alert(`Time's up! ${winningColor} wins!`);
+      });
 
       // 50-Move Rule Tracker
       if (isCapture || pieceChar.toLowerCase === "p") {
