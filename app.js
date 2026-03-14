@@ -769,6 +769,13 @@ function undoMove() {
     historyBox.removeChild(historyBox.lastChild);
   }
 
+  ChessTimer.setState(prevState.wTimer, prevState.bTime, playerTurn);
+  ChessTimer.start(playerTurn, (losingColor) => {
+    isGameOver = true;
+    const winningColor = losingColor === "white" ? "Black" : "White";
+    alert(`Time's up ${winningColor} wins!`);
+  });
+
   isGameOver = false;
   initBoard();
 }
