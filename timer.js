@@ -1,13 +1,13 @@
 const ChessTimer = {
-  STARTING_TIME: 600,
+  startingTime: 600,
   whiteTime: 600,
   blackTime: 600,
   timerInterval: null,
 
   reset() {
     this.stop();
-    this.whiteTime = this.STARTING_TIME;
-    this.blackTime = this.STARTING_TIME;
+    this.whiteTime = this.startingTime;
+    this.blackTime = this.startingTime;
     this.updateUI("white");
   },
 
@@ -65,5 +65,9 @@ const ChessTimer = {
     this.whiteTime = wTimer;
     this.blackTime = bTimer;
     this.updateUI(activeTurn);
+  },
+
+  setTimeControl(seconds) {
+    this.startingTime = seconds;
   },
 };
