@@ -2,6 +2,7 @@ const gameBoard = document.querySelector("#gameboard");
 const flipBtn = document.querySelector("#flip-btn");
 const resetBtn = document.querySelector("#reset-btn");
 const undoBtn = document.querySelector("#undo-btn");
+const timeControlSelect = document.getElementById("time-control");
 let selectedSquare = null;
 let lastMove = null;
 
@@ -110,6 +111,7 @@ function resetBoard() {
   halfMoveClock = 0;
   positionHistory = {};
   isGameOver = false;
+  timeControlSelect.disabled = false;
   ChessTimer.reset();
 }
 
@@ -320,6 +322,8 @@ function onSquareClick(row, col) {
       wTimer: ChessTimer.whiteTime,
       bTime: ChessTimer.blackTime,
     });
+
+    timeControlSelect.disabled = true;
 
     const destContent = boardState[row][col];
     isCapture = destContent !== "";
@@ -745,7 +749,10 @@ function updateCapturedUI() {
   fillZone(blackZone, capturedByBlack);
 }
 function undoMove() {
-  if (gameHistory.length === 0) return;
+  if (gameHistory.length === 0) {
+    timeControlSelect.disabled = false;
+    return;
+  }
 
   const prevState = gameHistory.pop();
 
@@ -851,6 +858,14 @@ flipBtn.addEventListener("click", () => {
   initBoard();
 });
 resetBtn.addEventListener("click", () => {
+  resetBoard();
+  initBoard();
+});
+timeControlSelect.addEventListener("change", (e) => {
+  const newTime = parseInt(e.target.value);
+
+  ChessTimer.setTimeControl(newTime);
+
   resetBoard();
   initBoard();
 });
