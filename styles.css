@@ -213,3 +213,18 @@ button:hover {
     background-color: #333;
     border-color: #5c5c5c;
 }
+
+.time-selector {
+    background-color: #262421;
+    color: #eeeeee;
+    border: 1px solid #5c5c5c;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    outline: none;
+}
+
+.time-selector:hover {
+    background-color: #333;
+}
